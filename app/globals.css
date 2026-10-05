@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,3 +18,8 @@ body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antial
 .leaflet-container { background: #1b1b1b; font-family: Inter, sans-serif; }
 .price-pin { background: #fff; color: #111; font-weight: 600; font-size: 12px; padding: 3px 8px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.4); white-space: nowrap; }
 .price-pin.active { background: #b46ef0; color: #fff; }
+.h-section { @apply font-semibold tracking-tight; }
+.pill-active { background: #c77dff; color: #24073f; }
+.btn-deep { @apply rounded-full bg-[#5b1a9e] px-5 py-3 text-[15px] font-medium text-white transition hover:bg-[#6a22b5]; }
+.glass-btn { @apply grid place-items-center rounded-full border border-white/25 bg-black/30 backdrop-blur-sm text-white; }
+@media (max-width: 767px) { body { padding-bottom: 96px; } }

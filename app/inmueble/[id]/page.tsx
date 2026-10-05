@@ -7,6 +7,7 @@ import { search } from "@/lib/search";
 import { CIUDADES } from "@/lib/geo";
 import { eur, hace } from "@/lib/format";
 import { riesgoEstafa } from "@/lib/scam";
+import MarkVisited from "@/components/detail/MarkVisited";
 import Gallery from "@/components/detail/Gallery";
 import FavButton from "@/components/detail/FavButton";
 import ContactBox from "@/components/detail/ContactBox";
@@ -32,6 +33,7 @@ export default function Inmueble({ params }: { params: { id: string } }) {
   const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${l.lng - 0.008},${l.lat - 0.005},${l.lng + 0.008},${l.lat + 0.005}&layer=mapnik&marker=${l.lat},${l.lng}`;
   return (
     <div className="mx-auto max-w-6xl px-4 pb-10 pt-4 md:px-6">
+      <MarkVisited id={l.id} />
       <Link href={`/buscar/${l.operacion}?ciudad=${c.slug}`} className="mb-4 inline-flex items-center gap-1 text-sm text-soft hover:text-white"><ChevronLeft size={16} /> Volver a resultados</Link>
       <Gallery fotos={l.fotos} titulo={l.titulo} />
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">

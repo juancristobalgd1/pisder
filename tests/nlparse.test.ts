@@ -37,3 +37,9 @@ test("Elgoibar existe", () => {
   const r = search({ operacion: "alquilar", q: "pisos en Elgoibar" });
   assert.ok(r.items.every((l) => l.ciudad === "Elgoibar"));
 });
+test("casa con piscina playa", () => {
+  const r = search({ operacion: "comprar", q: "casa con piscina playa" });
+  assert.equal(r.filtros.cercaPlayaKm, 1);
+  assert.ok(r.total > 0, "debería haber casas con piscina cerca de la playa");
+  for (const l of r.items) { assert.ok(["casa", "chalet"].includes(l.tipo)); assert.ok(l.extras.includes("piscina")); assert.ok((l.distPlaya ?? 99) <= 1); }
+});

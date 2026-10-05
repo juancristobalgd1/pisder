@@ -39,7 +39,8 @@ export function parseQuery(q: string, base: Partial<SearchFilters> = {}): { filt
   for (const [re, tipo] of TIPO_WORDS) if (re.test(t)) tipos.add(tipo);
   // "3 habitaciones" no implica tipo habitación
   if (tipos.has("habitacion") && /\d+\s*habitaciones/.test(t) && !/compartid|compartir/.test(t)) tipos.delete("habitacion");
-  if (tipos.size) { f.tipos = [...tipos]; chips.push(...[...tipos].map((x) => x)); }
+  if (tipos.has("casa")) tipos.add("chalet");
+  if (tipos.size) { f.tipos = [...tipos]; chips.push(...[...tipos].filter((x) => !(x === "chalet" && tipos.has("casa")))); }
 
   let m = t.match(/(\d+)\s*(habitaciones|habitacion|hab|dormitorios|dormitorio|dorm|cuartos)\b/);
   if (m) { f.habMin = +m[1]; chips.push(`${m[1]}+ hab`); }
@@ -62,6 +63,11 @@ export function parseQuery(q: string, base: Partial<SearchFilters> = {}): { filt
   const extras = EXTRA_WORDS.filter(([re]) => re.test(t)).map(([, e]) => e);
   if (extras.includes("garaje") && f.tipos?.includes("garaje")) extras.splice(extras.indexOf("garaje"), 1);
   if (extras.length) { f.extras = extras; chips.push(...extras); }
+
+  m = t.match(/(?:a\s*)?(?:menos de\s*)?(\d+(?:[.,]\d+)?)\s*(km|kilometros?|m|metros)\s*(?:de|a)\s*la\s*playa/);
+  if (m) { const v = parseFloat(m[1].replace(",", ".")); f.cercaPlayaKm = /^m|metros/.test(m[2]) ? v / 1000 : v; }
+  else if (/\b(playa|primera linea|frente al mar|cerca del mar)\b/.test(t)) f.cercaPlayaKm = 1;
+  if (f.cercaPlayaKm) chips.push(`Playa ≤ ${f.cercaPlayaKm < 1 ? Math.round(f.cercaPlayaKm * 1000) + " m" : f.cercaPlayaKm.toLocaleString("es-ES") + " km"}`);
 
   if (/(particular|dueno directo|sin agencia|sin comision)/.test(t)) { f.soloParticulares = true; chips.push("particular"); }
   if (/(barato|economico|low cost)/.test(t)) f.orden = "precio_asc";

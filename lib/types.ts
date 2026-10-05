@@ -26,6 +26,7 @@ export interface Listing {
   fuentes: { nombre: Fuente; url: string; precio: number }[]; // misma vivienda en varios portales (deduplicada)
   anunciante: { tipo: "agencia" | "particular"; nombre: string; telefono: string; verificado: boolean };
   publicadoEn: string;     // ISO
+  distPlaya?: number;       // km a la playa más cercana (ciudades de costa)
   eficiencia?: "A" | "B" | "C" | "D" | "E" | "F" | "G";
   destacada?: boolean;
 }
@@ -44,6 +45,7 @@ export interface SearchFilters {
   banosMin?: number;
   extras?: string[];
   soloParticulares?: boolean;
+  cercaPlayaKm?: number;
   orden?: "recientes" | "precio_asc" | "precio_desc" | "m2_desc" | "relevancia" | "precio_m2";
   bbox?: [number, number, number, number]; // sur, oeste, norte, este
   page?: number;

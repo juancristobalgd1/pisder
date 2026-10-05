@@ -16,6 +16,7 @@ export function filtersFromParams(sp: URLSearchParams | Record<string, string | 
     precioMin: n("pmin"), precioMax: n("pmax"), m2Min: n("m2min"), m2Max: n("m2max"),
     habMin: n("hab"), banosMin: n("banos"), extras: list("extras"),
     soloParticulares: get("part") === "1",
+    cercaPlayaKm: n("playa"),
     orden: (get("orden") as SearchFilters["orden"]) ?? undefined,
     bbox: bbox && bbox.length === 4 ? (bbox as [number, number, number, number]) : undefined,
     page: n("page") ?? 1, perPage: n("pp") ?? 24,
@@ -35,6 +36,7 @@ export function filtersToParams(f: Partial<SearchFilters>): string {
   if (f.banosMin) p.set("banos", String(f.banosMin));
   if (f.extras?.length) p.set("extras", f.extras.join(","));
   if (f.soloParticulares) p.set("part", "1");
+  if (f.cercaPlayaKm) p.set("playa", String(f.cercaPlayaKm));
   if (f.orden && f.orden !== "recientes") p.set("orden", f.orden);
   return p.toString();
 }
@@ -73,6 +75,7 @@ export function search(input: SearchFilters): SearchResult {
     if (f.banosMin && l.banos < f.banosMin) return false;
     if (f.extras?.length && !f.extras.every((e) => l.extras.includes(e))) return false;
     if (f.soloParticulares && l.anunciante.tipo !== "particular") return false;
+    if (f.cercaPlayaKm && (l.distPlaya === undefined || l.distPlaya > f.cercaPlayaKm)) return false;
     if (f.bbox) { const [s, w, n, e] = f.bbox; if (l.lat < s || l.lat > n || l.lng < w || l.lng > e) return false; }
     return true;
   });

@@ -2,7 +2,8 @@
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { ArrowDownUp, Bell, Camera, ChevronDown, Columns2, EyeOff, LayoutList, Map as MapIcon, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { ArrowDownUp, Bell, Camera, ChevronDown, Columns2, EyeOff, ImagePlus, KeyRound, LayoutList, List, Map as MapIcon, MapPin, SlidersHorizontal, Sparkles, X } from "lucide-react";
+import { saveLastSearch } from "../useLocal";
 import type { Operacion, SearchFilters, SearchResult } from "@/lib/types";
 import { filtersFromParams, filtersToParams, search } from "@/lib/search";
 import { ciudadPorSlug } from "@/lib/geo";
@@ -31,6 +32,7 @@ export default function SearchView({ op }: { op: Operacion }) {
   const [pending, start] = useTransition();
 
   useEffect(() => { setRes(initial); setItems(initial.items); setQ(initial.filtros.q ?? ""); }, [initial]);
+  useEffect(() => { const qq = sp.get("q"); if (qq) saveLastSearch(qq, `/buscar/${op}/?${sp.toString()}`); }, [sp, op]);
 
   const push = (f: Partial<SearchFilters>, o: Operacion = op) => start(() => router.push(`/buscar/${o}?${filtersToParams(f)}`, { scroll: false }));
   // Base = lo que hay en la URL (no lo interpretado), para no "congelar" la interpretación
@@ -40,7 +42,7 @@ export default function SearchView({ op }: { op: Operacion }) {
     o.ciudad = sp.get("ciudad") ?? undefined; o.barrio = sp.get("barrio") ?? undefined;
     o.tipos = sp.get("tipo")?.split(",") as SearchFilters["tipos"]; o.extras = sp.get("extras")?.split(",");
     o.precioMin = n("pmin"); o.precioMax = n("pmax"); o.m2Min = n("m2min"); o.habMin = n("hab"); o.banosMin = n("banos");
-    o.soloParticulares = sp.get("part") === "1"; o.orden = (sp.get("orden") as SearchFilters["orden"]) ?? undefined;
+    o.soloParticulares = sp.get("part") === "1"; o.cercaPlayaKm = n("playa"); o.orden = (sp.get("orden") as SearchFilters["orden"]) ?? undefined;
     return o;
   };
   const nActivos = useMemo(() => { const b = urlBase(); return [b.tipos?.length, b.precioMin, b.precioMax, b.m2Min, b.habMin, b.banosMin, b.extras?.length, b.soloParticulares].filter(Boolean).length; }, [sp]); // eslint-disable-line
@@ -56,34 +58,62 @@ export default function SearchView({ op }: { op: Operacion }) {
     setRes(r); setItems(r.items);
   };
   const ciudad = ciudadPorSlug(res.filtros.ciudad)?.nombre;
+  const submitQ = () => push({ ...urlBase(), q, tipos: undefined, extras: undefined, precioMax: undefined, precioMin: undefined, habMin: undefined, ciudad: undefined, barrio: undefined, m2Min: undefined, cercaPlayaKm: undefined });
+  const playa = res.filtros.cercaPlayaKm;
+  const quitarPlaya = () => { const nq = (sp.get("q") ?? "").replace(/\s*(?:a\s*)?(?:menos de\s*)?\d*[.,]?\d*\s*(?:km|m|metros|kilometros?)?\s*(?:cerca\s+)?(?:de\s+|en\s+)?(?:la\s+)?playa/gi, "").trim(); setQ(nq); push({ ...urlBase(), q: nq, cercaPlayaKm: undefined }); };
+  const chipsIA = res.interpretacion.filter((c) => !c.startsWith("Playa"));
   const orden = res.filtros.orden ?? "recientes";
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 pb-10 md:px-6">
-      {/* Barra de búsqueda */}
-      <div className="sticky top-16 z-30 -mx-4 bg-bg/95 px-4 pb-3 pt-2 backdrop-blur md:-mx-6 md:px-6">
+      {/* Barra móvil (calcada a la app) */}
+      <div className="sticky top-0 z-30 -mx-4 bg-bg px-4 pb-3 pt-4 md:hidden">
+        <div className="flex gap-3">
+          <form className="flex h-[60px] flex-1 items-center rounded-[22px] border border-[#cfcfd4] bg-[#141414] pl-5 pr-3" onSubmit={(e) => { e.preventDefault(); submitQ(); }}>
+            <input value={q} onChange={(e) => setQ(e.target.value)} enterKeyHint="search" placeholder="Describe lo que buscas" className="min-w-0 flex-1 bg-transparent text-[17px] text-white outline-none placeholder:text-muted" />
+            {q ? <button type="button" onClick={() => { setQ(""); push({}); }} className="p-2 text-soft" aria-label="Borrar"><X size={20} /></button>
+              : <button type="button" className="p-1.5 text-white" aria-label="Buscar por foto"><ImagePlus size={24} /></button>}
+          </form>
+          <button onClick={() => setDrawer(true)} aria-label="Filtros" className="relative grid h-[60px] w-[60px] place-items-center rounded-[18px] border border-[#3a3a3e] bg-[#1c1c1e] text-white">
+            <SlidersHorizontal size={24} />{nActivos > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-[#c77dff] text-[12px] font-bold text-[#24073f]">{nActivos}</span>}
+          </button>
+        </div>
+        <div className="-mx-4 mt-3 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+          <button onClick={() => setAlerta(true)} className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><Bell size={18} />Crear alerta</button>
+          {playa ? <span className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] py-2 pl-3 pr-2 text-[13px] font-semibold uppercase tracking-wide text-white"><MapPin size={18} className="text-[#c77dff]" />Cerca de playa<span className="font-normal normal-case text-soft">≤ {playa < 1 ? `${Math.round(playa * 1000)} m` : `${playa.toLocaleString("es-ES")} km`}</span><button onClick={quitarPlaya} aria-label="Quitar" className="p-0.5 text-soft"><X size={17} /></button></span> : null}
+          <div className="relative shrink-0">
+            <button onClick={() => setOpOpen((v) => !v)} className="flex items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><KeyRound size={18} className="text-[#c77dff]" />{op === "alquilar" ? "Alquiler" : "Venta"}</button>
+          </div>
+          {!hideAI && chipsIA.map((c) => <span key={c} className="flex shrink-0 items-center rounded-full border border-[#3a2a55] bg-[#1f1a2b] px-3.5 py-2.5 text-[14px] text-[#d9c2ff]">{c}</span>)}
+        </div>
+        {opOpen && <div className="absolute left-4 top-full z-20 -mt-1 w-40 rounded-2xl border border-line bg-[#232325] p-1.5 shadow-xl">{(["alquilar", "comprar"] as const).map((o) => <button key={o} onClick={() => { setOpOpen(false); push(urlBase(), o); }} className={`block w-full rounded-xl px-3 py-2.5 text-left text-[15px] ${o === op ? "text-white" : "text-soft"}`}>{o === "alquilar" ? "Alquiler" : "Venta"}</button>)}</div>}
+        <p className="mt-2 text-[13px] text-muted">{res.total.toLocaleString("es-ES")} {res.total === 1 ? "inmueble" : "inmuebles"}{ciudad ? ` en ${res.filtros.barrio ? res.filtros.barrio + ", " : ""}${ciudad.split(" /")[0]}` : ""}{pending ? " · actualizando…" : ""}</p>
+      </div>
+
+      {/* Barra escritorio */}
+      <div className="sticky top-16 z-30 -mx-6 hidden bg-bg/95 px-6 pb-3 pt-2 backdrop-blur md:block">
         <div className="flex gap-2">
-          <form className="flex flex-1 items-center rounded-full border border-line bg-surface pl-4 pr-1.5" onSubmit={(e) => { e.preventDefault(); push({ ...urlBase(), q, tipos: undefined, extras: undefined, precioMax: undefined, precioMin: undefined, habMin: undefined, ciudad: undefined, barrio: undefined, m2Min: undefined }); }}>
+          <form className="flex flex-1 items-center rounded-full border border-line bg-surface pl-4 pr-1.5" onSubmit={(e) => { e.preventDefault(); submitQ(); }}>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Refina esta búsqueda..." className="h-11 flex-1 bg-transparent text-sm outline-none placeholder:text-muted" />
             {q && <button type="button" onClick={() => { setQ(""); push({}); }} className="p-2 text-muted hover:text-white" aria-label="Borrar"><X size={16} /></button>}
             <button type="button" className="p-2 text-soft hover:text-white" aria-label="Buscar por foto"><Camera size={17} /></button>
           </form>
           <button onClick={() => setDrawer(true)} className="flex items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm text-soft hover:text-white">
-            <SlidersHorizontal size={16} /> <span className="hidden sm:inline">Filtros</span>{nActivos > 0 && <span className="grid h-5 w-5 place-items-center rounded-full bg-brand text-[11px] text-white">{nActivos}</span>}
+            <SlidersHorizontal size={16} /> <span>Filtros</span>{nActivos > 0 && <span className="grid h-5 w-5 place-items-center rounded-full bg-brand text-[11px] text-white">{nActivos}</span>}
           </button>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button onClick={() => setAlerta(true)} className="inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-3 py-1.5 text-xs font-medium"><Bell size={13} /> Crear alerta</button>
           <div className="relative">
             <button onClick={() => setOpOpen((v) => !v)} className="chip"><Sparkles size={12} />{op === "alquilar" ? "Alquiler" : "Venta"}<ChevronDown size={12} /></button>
-            {opOpen && <div className="panel absolute left-0 top-full z-20 mt-1 w-36 p-1 text-sm">{(["alquilar", "comprar"] as const).map((o) => <button key={o} onClick={() => { setOpOpen(false); push(urlBase(), o); }} className="block w-full rounded-lg px-3 py-2 text-left hover:bg-card">{o === "alquilar" ? "Alquiler" : "Venta"}</button>)}</div>}
           </div>
-          {!hideAI && res.interpretacion.map((c) => <span key={c} className="chip border-brand/40 text-brand-400">{c}</span>)}
+          {playa ? <span className="chip border-brand/40 text-brand-400"><MapPin size={12} />Cerca de playa ≤ {playa} km<button onClick={quitarPlaya} aria-label="Quitar"><X size={12} /></button></span> : null}
+          {!hideAI && chipsIA.map((c) => <span key={c} className="chip border-brand/40 text-brand-400">{c}</span>)}
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="mb-4 mt-1 flex flex-wrap items-center justify-between gap-3 text-sm">
+      <div className="mb-4 mt-1 hidden flex-wrap items-center justify-between gap-3 text-sm md:flex">
         <div className="flex items-center gap-4 text-soft">
           <span><b className="text-white">{res.total.toLocaleString("es-ES")}</b> {res.total === 1 ? "inmueble" : "inmuebles"} en {op === "alquilar" ? "alquiler" : "venta"}{ciudad ? ` en ${res.filtros.barrio ? res.filtros.barrio + ", " : ""}${ciudad}` : ""}</span>
           <button onClick={() => setHideAI((v) => !v)} className="flex items-center gap-1.5 hover:text-white"><EyeOff size={15} /> {hideAI ? "Mostrar IA" : "Ocultar IA"}</button>
@@ -107,18 +137,23 @@ export default function SearchView({ op }: { op: Operacion }) {
       )}
 
       {vista === "mapa" ? (
-        <div className="h-[calc(100vh-230px)] min-h-[420px]"><MapView items={items} hover={hover} onBounds={onBounds} /></div>
+        <div className="h-[calc(100svh-260px)] min-h-[420px] md:h-[calc(100vh-230px)]"><MapView items={items} hover={hover} onBounds={onBounds} /></div>
       ) : (
         <div className={vista === "dividida" ? "grid gap-6 lg:grid-cols-[1fr_minmax(380px,45%)]" : ""}>
           <div>
-            <div className={`grid gap-x-5 gap-y-8 ${vista === "dividida" ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
-              {items.map((l) => <PropertyCard key={l.id} l={l} onHover={setHover} />)}
+            <div className={`grid gap-x-5 gap-y-9 ${vista === "dividida" ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
+              {items.map((l) => <PropertyCard key={l.id} l={l} onHover={setHover} onMap={(x) => { setHover(x.id); setVista("mapa"); window.scrollTo({ top: 0 }); }} />)}
             </div>
             {res.page < res.pages && <div className="mt-10 text-center"><button onClick={loadMore} className="btn-ghost">Cargar más ({(res.total - items.length).toLocaleString("es-ES")} restantes)</button></div>}
           </div>
           {vista === "dividida" && <div className="sticky top-[150px] hidden h-[calc(100vh-170px)] lg:block"><MapView items={items} hover={hover} onBounds={onBounds} /></div>}
         </div>
       )}
+
+      {/* Botón flotante Mapa / Lista (móvil) */}
+      <button onClick={() => { setVista((v) => (v === "mapa" ? "lista" : "mapa")); window.scrollTo({ top: 0 }); }} className="fixed bottom-[92px] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white px-5 py-3 text-[15px] font-semibold text-black shadow-[0_8px_30px_rgba(0,0,0,.5)] md:hidden">
+        {vista === "mapa" ? <><List size={18} />Lista</> : <><MapIcon size={18} />Mapa</>}
+      </button>
 
       {drawer && <FiltersDrawer base={urlBase()} op={op} onClose={() => setDrawer(false)} onApply={(f) => { setDrawer(false); push(f); }} />}
       {alerta && <AlertModal query={q || (ciudad ? `Pisos en ${ciudad}` : "Mi búsqueda")} params={`${op}?${sp.toString()}`} onClose={() => setAlerta(false)} />}

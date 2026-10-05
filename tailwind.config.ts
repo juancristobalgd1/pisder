@@ -10,7 +10,7 @@ const config: Config = {
         wa: "#25d366",
       },
       fontFamily: {
-        serif: ["'Instrument Serif'", "Georgia", "serif"],
+        serif: ["Fraunces", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
       },
       backgroundImage: {

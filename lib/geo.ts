@@ -43,5 +43,32 @@ export const CIUDADES: Ciudad[] = [
     b("Centro", 43.2148, -2.4138, 1.05), b("San Roke", 43.2120, -2.4180, 0.95), b("Olaso", 43.2170, -2.4090, 1.0) ] },
 ];
 
+// Playas de referencia (aprox.) para el filtro "cerca de la playa"
+export const PLAYAS: Record<string, [number, number][]> = {
+  barcelona: [[41.3784, 2.1925], [41.3950, 2.2050], [41.4030, 2.2110]],
+  valencia: [[39.4777, -0.3237], [39.4650, -0.3240]],
+  malaga: [[36.7186, -4.4105], [36.7180, -4.3650], [36.6930, -4.4500]],
+  donostia: [[43.3176, -1.9870], [43.3260, -1.9740], [43.3110, -2.0040]],
+  palma: [[39.5650, 2.6620], [39.5580, 2.6800]],
+};
+export function km(a: [number, number], b: [number, number]) {
+  const R = 6371, dLat = ((b[0] - a[0]) * Math.PI) / 180, dLng = ((b[1] - a[1]) * Math.PI) / 180;
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos((a[0] * Math.PI) / 180) * Math.cos((b[0] * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+export const CALLES: Record<string, string[]> = {
+  madrid: ["Calle de Alcalá", "Calle de Fuencarral", "Calle de Goya", "Calle de Toledo", "Calle de Bravo Murillo", "Calle de Embajadores", "Calle de Hortaleza", "Paseo de las Delicias", "Calle de la Princesa", "Calle del Doctor Esquerdo", "Calle de Santa Engracia", "Calle de Ríos Rosas"],
+  barcelona: ["Carrer de Mallorca", "Carrer d'Aragó", "Carrer de Balmes", "Carrer de Sants", "Carrer Gran de Gràcia", "Carrer de Muntaner", "Carrer del Consell de Cent", "Rambla del Poblenou", "Carrer de la Marina", "Carrer de Pujades"],
+  valencia: ["Carrer de Sueca", "Avinguda del Regne de València", "Carrer de Cuba", "Avinguda del Port", "Carrer de Quart", "Avinguda de Blasco Ibáñez", "Carrer de la Reina"],
+  sevilla: ["Calle Betis", "Calle San Jacinto", "Avenida de Eduardo Dato", "Calle Feria", "Calle Asunción", "Calle Luis Montoto"],
+  malaga: ["Calle Larios", "Paseo Marítimo Pablo Ruiz Picasso", "Avenida Juan Sebastián Elcano", "Calle Victoria", "Calle Héroe de Sostoa", "Avenida de Andalucía"],
+  bilbao: ["Gran Vía de Don Diego López de Haro", "Calle Licenciado Poza", "Calle Ercilla", "Calle Somera", "Avenida Lehendakari Aguirre", "Calle Iturribide"],
+  donostia: ["Calle Urbieta", "Calle San Martín", "Calle Zabaleta", "Avenida de Zarautz", "Paseo de Errotaburu", "Calle Matía"],
+  zaragoza: ["Paseo de la Independencia", "Calle Alfonso I", "Avenida de Madrid", "Calle Delicias", "Avenida Gómez Laguna"],
+  palma: ["Carrer de Sant Magí", "Carrer de la Fàbrica", "Avinguda de Joan Miró", "Passeig del Born", "Carrer de l'Om"],
+  eibar: ["Calle Toribio Etxebarria", "Calle Isasi", "Avenida Otaola", "Calle Bidebarrieta", "Calle Ego Gain"],
+  elgoibar: ["Kalebarren", "San Frantzisko kalea", "Olaso kalea", "Pedro Mugurutza kalea", "Santa Ana kalea"],
+};
+
 export const ciudadPorSlug = (s?: string) => CIUDADES.find((c) => c.slug === s);
 export const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();

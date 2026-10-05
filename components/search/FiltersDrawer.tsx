@@ -23,6 +23,12 @@ export default function FiltersDrawer({ base, op, onClose, onApply }: { base: Pa
       <aside className="flex h-full w-full max-w-md flex-col bg-surface" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-line px-5 py-4"><p className="font-medium">Filtros</p><button onClick={onClose} aria-label="Cerrar"><X size={18} /></button></div>
         <div className="flex-1 space-y-7 overflow-y-auto px-5 py-5 text-sm">
+          <section className="md:hidden"><p className="mb-2 text-soft">Ordenar por</p>
+            <select className="input" value={f.orden ?? "recientes"} onChange={(e) => set({ orden: e.target.value as SearchFilters["orden"] })}>
+              {[["recientes", "Más recientes"], ["relevancia", "Más relevantes"], ["precio_asc", "Más baratos"], ["precio_desc", "Más caros"], ["precio_m2", "Mejor €/m²"], ["m2_desc", "Más grandes"]].map(([k, t]) => <option key={k} value={k}>{t}</option>)}
+            </select></section>
+          <section><p className="mb-2 text-soft">Cerca de la playa</p>
+            <div className="flex flex-wrap gap-2">{[undefined, 0.3, 0.5, 1, 2].map((v) => <button key={String(v)} onClick={() => set({ cercaPlayaKm: v })} className={`chip ${f.cercaPlayaKm === v ? "border-brand bg-brand/15 text-white" : ""}`}>{v === undefined ? "Indiferente" : v < 1 ? `≤ ${v * 1000} m` : `≤ ${v} km`}</button>)}</div></section>
           <section><p className="mb-2 text-soft">Ubicación</p>
             <select className="input" value={f.ciudad ?? ""} onChange={(e) => set({ ciudad: e.target.value || undefined, barrio: undefined })}>
               <option value="">Toda España</option>{CIUDADES.map((c) => <option key={c.slug} value={c.slug}>{c.nombre}</option>)}</select>

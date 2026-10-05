@@ -11,8 +11,13 @@ import { latestIn, search } from "@/lib/search";
 import { allListings } from "@/lib/data";
 import { BRAND } from "@/lib/brand";
 import { eur } from "@/lib/format";
+import { asset } from "@/lib/asset";
 
-const foto = (s: string) => `https://picsum.photos/seed/city-${s}/640/480`;
+
+
+const FOTO_CIUDAD: Record<string, string> = { madrid: "fachada-clasica", barcelona: "salon-modernista", valencia: "fachada-moderna", sevilla: "comedor", malaga: "salon-mar", bilbao: "fachada-moderna", donostia: "terraza", zaragoza: "fachada-clasica", palma: "piscina-comunitaria", eibar: "salon", elgoibar: "dormitorio" };
+const FOTOS = ["salon", "terraza", "comedor", "salon-modernista", "fachada-clasica", "estudio", "salon-mar", "fachada-moderna", "cocina"];
+const foto = (s: string, i = 0) => asset(`/fotos/${FOTO_CIUDAD[s] ?? FOTOS[i % FOTOS.length]}.webp`);
 
 export default function Home() {
   const total = allListings().length;
@@ -34,13 +39,16 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-14 md:pt-20">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.18),transparent_60%)]" />
-        <h1 className="relative mx-auto max-w-3xl text-center font-serif text-5xl leading-[1.05] text-white md:text-7xl">
-          Busca <em className="italic">pisos</em><br />como te los imaginas
+      <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden px-5 pb-28 pt-28 md:min-h-[640px] md:pb-16 md:pt-32">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset("/img/hero-mobile.webp")} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover md:hidden" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={asset("/img/hero-wide.webp")} alt="" className="absolute inset-0 -z-10 hidden h-full w-full object-cover md:block" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/20 via-transparent to-bg" />
+        <h1 className="mx-auto mt-[22vh] max-w-3xl text-center font-serif text-[44px] font-bold leading-[1.08] text-white md:mt-6 md:text-7xl">
+          Busca <em className="font-semibold italic">pisos</em><br />como te los imaginas
         </h1>
-        <p className="relative mx-auto mt-5 max-w-xl text-center text-soft">Todos los portales de España en una sola búsqueda. {total.toLocaleString("es-ES")} anuncios de demo listos para probar.</p>
-        <div className="relative mt-10"><HeroSearch /></div>
+        <div className="mt-10"><HeroSearch /></div>
       </section>
 
       <div className="mx-auto max-w-7xl space-y-20 px-4 md:px-6">
@@ -123,7 +131,7 @@ export default function Home() {
         <section>
           <SectionHeader eyebrow="Barrios y zonas" title="Explora por barrio" href="/indice" more="Guías de barrios" />
           <Carousel>{CIUDADES.slice(0, 3).flatMap((c) => c.barrios.slice(0, 3).map((b) => (
-            <CityCard key={c.slug + b.slug} nombre={`${b.nombre}`} href={`/buscar/alquilar?ciudad=${c.slug}&barrio=${encodeURIComponent(b.nombre)}`} foto={foto(c.slug + b.slug)}
+            <CityCard key={c.slug + b.slug} nombre={`${b.nombre}`} href={`/buscar/alquilar?ciudad=${c.slug}&barrio=${encodeURIComponent(b.nombre)}`} foto={foto(c.slug + b.slug, b.slug.length + c.slug.length)}
               links={[{ t: "Alquiler", href: `/buscar/alquilar?ciudad=${c.slug}&barrio=${encodeURIComponent(b.nombre)}` }, { t: "Venta", href: `/buscar/comprar?ciudad=${c.slug}&barrio=${encodeURIComponent(b.nombre)}` }]} />)))}</Carousel>
           <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted">
             <span className="text-soft">Más barrios:</span>{CIUDADES.flatMap((c) => c.barrios.slice(3).map((b) => (
