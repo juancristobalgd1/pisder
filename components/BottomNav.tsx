@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, UserRound } from "lucide-react";
+import { Flame, Home, Search, UserRound } from "lucide-react";
 const ITEMS = [
   { href: "/", t: "Inicio", I: Home, match: (p: string) => p === "/" },
   { href: "/buscar/alquilar/", t: "Buscar", I: Search, match: (p: string) => p.startsWith("/buscar") || p.startsWith("/inmueble") },
+  { href: "/flechazo/", t: "Flechazo", I: Flame, match: (p: string) => p.startsWith("/flechazo") },
   { href: "/perfil/", t: "Perfil", I: UserRound, match: (p: string) => p.startsWith("/perfil") || p.startsWith("/favoritos") },
 ];
 export default function BottomNav() {

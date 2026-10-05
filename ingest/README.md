@@ -6,7 +6,7 @@ La app lee de `lib/data.ts` (datos demo). En producción se cambia por una tabla
 |---|---|---|
 | Idealista | API oficial para partners (hay que solicitar acceso) | por pedir |
 | Feeds XML/JSON de agencias | Importación directa (formato Kyero / feed propio) | listo para implementar |
-| Particulares | Publicación propia en pisoya | por hacer |
+| Particulares | Publicación propia en pisder | por hacer |
 | Otros portales | Solo con acuerdo o licencia. Hacer scraping va contra sus condiciones de uso | no recomendado |
 
 ## Pipeline

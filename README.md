@@ -1,4 +1,4 @@
-# pisoya
+# pisder
 
 Buscador agregador de pisos para España: todos los portales en una sola búsqueda, en lenguaje natural.
 Versión española inspirada en el flujo de Roomix (Argentina): misma estructura de pantallas y UX, marca, código y textos propios.
