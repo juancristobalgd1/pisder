@@ -9,7 +9,7 @@ Versión española inspirada en el flujo de Roomix (Argentina): misma estructura
 - **Ficha** `/inmueble/[id]`: galería, precio y €/m² frente al barrio, características, mapa, contacto por WhatsApp sin registro, portales donde aparece y a qué precio, riesgo de estafa y similares.
 - **Favoritos y colecciones** sin registro (`/favoritos`).
 - **Herramientas**: actualizar alquiler (IPC / IRAV), simulador de hipoteca (fijo o Euríbor + diferencial), detector de estafas, índice de precios.
-- **API**: `GET /api/search`, `GET /api/listings?ids=`, `GET /api/listings/[id]`, `POST /api/alerts`.
+- **Web estática**: la búsqueda corre en el navegador, lista para GitHub Pages (workflow en `.github/workflows/pages.yml`). Las alertas se guardan en el dispositivo hasta que haya backend.
 
 Adaptado a España: euros, habitaciones y baños (no «ambientes»), gastos de comunidad (no «expensas»), tipos de vivienda locales (ático, dúplex, chalet, habitación…), y ciudades desde Madrid y Barcelona hasta Donostia, Eibar y Elgoibar.
 
@@ -18,7 +18,7 @@ Adaptado a España: euros, habitaciones y baños (no «ambientes»), gastos de c
 npm install
 npm run dev     # http://localhost:3000
 npm test        # pruebas del intérprete de búsqueda
-npm run build && npm start
+npm run build   # genera la web estática en out/
 ```
 
 ## Datos
