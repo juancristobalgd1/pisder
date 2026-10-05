@@ -6,7 +6,7 @@ import type { Listing } from "@/lib/types";
 import { useFavs } from "./useFavs";
 import { useLocal } from "./useLocal";
 
-const n0 = (n: number) => n.toLocaleString("es-ES", { maximumFractionDigits: 0 });
+const n0 = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 export default function PropertyCard({ l, compact = false, onHover, onMap }: { l: Listing; compact?: boolean; onHover?: (id: string | null) => void; onMap?: (l: Listing) => void }) {
   const [i, setI] = useState(0);
