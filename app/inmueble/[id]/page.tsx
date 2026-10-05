@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bath, BedDouble, Building2, ChevronLeft, ExternalLink, Leaf, MapPin, Phone, Ruler, ShieldCheck } from "lucide-react";
-import { extraLabel, getListing, tipoLabel } from "@/lib/data";
+import { allListings, extraLabel, getListing, tipoLabel } from "@/lib/data";
 import { search } from "@/lib/search";
 import { CIUDADES } from "@/lib/geo";
 import { eur, hace } from "@/lib/format";
@@ -11,6 +11,9 @@ import Gallery from "@/components/detail/Gallery";
 import FavButton from "@/components/detail/FavButton";
 import ContactBox from "@/components/detail/ContactBox";
 import PropertyCard from "@/components/PropertyCard";
+
+export const dynamicParams = false;
+export function generateStaticParams() { return allListings().map((l) => ({ id: l.id })); }
 
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
   const l = getListing(params.id);

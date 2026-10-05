@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FolderPlus, Share2, Trash2 } from "lucide-react";
 import type { Listing } from "@/lib/types";
 import PropertyCard from "./PropertyCard";
+import { getListing } from "@/lib/data";
 import { useFavs } from "./useFavs";
 export default function FavoritosView() {
   const { cols, crear, borrar } = useFavs();
@@ -12,7 +13,7 @@ export default function FavoritosView() {
   const col = cols.find((c) => c.id === sel) ?? cols[0];
   const [items, setItems] = useState<Listing[]>([]);
   const key = col?.ids.join(",") ?? "";
-  useEffect(() => { if (!key) { setItems([]); return; } fetch(`/api/listings?ids=${key}`).then((r) => r.json()).then(setItems); }, [key]);
+  useEffect(() => { setItems(key ? (key.split(",").map(getListing).filter(Boolean) as Listing[]) : []); }, [key]);
   return (
     <div className="mx-auto max-w-7xl px-4 pt-8 md:px-6">
       <h1 className="h-section">Mis colecciones</h1>
@@ -22,7 +23,7 @@ export default function FavoritosView() {
           <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nueva colección" className="input h-8 w-44 rounded-full py-1" /><button className="chip" aria-label="Crear"><FolderPlus size={13} /></button></form>
       </div>
       <div className="mt-4 flex gap-2">
-        <button onClick={() => { navigator.clipboard.writeText(`${location.origin}/buscar/alquilar?ids=${col?.ids.join(",")}`); setCopiado(true); }} className="chip"><Share2 size={13} />{copiado ? "Enlace copiado" : "Compartir"}</button>
+        <button onClick={() => { navigator.clipboard.writeText(location.href); setCopiado(true); }} className="chip"><Share2 size={13} />{copiado ? "Enlace copiado" : "Compartir"}</button>
         {col && col.id !== "fav" && <button onClick={() => { borrar(col.id); setSel("fav"); }} className="chip"><Trash2 size={13} />Borrar colección</button>}
       </div>
       {items.length === 0 ? <p className="mt-10 text-soft">Aún no hay nada aquí. Pulsa el corazón en cualquier anuncio para guardarlo.</p> :

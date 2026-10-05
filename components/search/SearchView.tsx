@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { ArrowDownUp, Bell, Camera, ChevronDown, Columns2, EyeOff, LayoutList, Map as MapIcon, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import type { Operacion, SearchFilters, SearchResult } from "@/lib/types";
-import { filtersToParams } from "@/lib/search";
+import { filtersFromParams, filtersToParams, search } from "@/lib/search";
 import { ciudadPorSlug } from "@/lib/geo";
 import PropertyCard from "../PropertyCard";
 import FiltersDrawer from "./FiltersDrawer";
@@ -14,9 +14,10 @@ const MapView = dynamic(() => import("./MapView"), { ssr: false, loading: () => 
 type Vista = "lista" | "dividida" | "mapa";
 const ORDENES: [NonNullable<SearchFilters["orden"]>, string][] = [["recientes", "Más recientes"], ["relevancia", "Más relevantes"], ["precio_asc", "Más baratos"], ["precio_desc", "Más caros"], ["precio_m2", "Mejor €/m²"], ["m2_desc", "Más grandes"]];
 
-export default function SearchView({ initial, op }: { initial: SearchResult; op: Operacion }) {
+export default function SearchView({ op }: { op: Operacion }) {
   const router = useRouter();
   const sp = useSearchParams();
+  const initial = useMemo(() => search(filtersFromParams(new URLSearchParams(sp.toString()), op)), [sp, op]);
   const [res, setRes] = useState(initial);
   const [items, setItems] = useState(initial.items);
   const [q, setQ] = useState(initial.filtros.q ?? "");
@@ -44,14 +45,14 @@ export default function SearchView({ initial, op }: { initial: SearchResult; op:
   };
   const nActivos = useMemo(() => { const b = urlBase(); return [b.tipos?.length, b.precioMin, b.precioMax, b.m2Min, b.habMin, b.banosMin, b.extras?.length, b.soloParticulares].filter(Boolean).length; }, [sp]); // eslint-disable-line
 
-  const loadMore = async () => {
-    const p = new URLSearchParams(sp.toString()); p.set("op", op); p.set("page", String(res.page + 1));
-    const r: SearchResult = await fetch(`/api/search?${p}`).then((x) => x.json());
+  const loadMore = () => {
+    const p = new URLSearchParams(sp.toString()); p.set("page", String(res.page + 1));
+    const r = search(filtersFromParams(p, op));
     setRes(r); setItems((prev) => [...prev, ...r.items]);
   };
-  const onBounds = async (bbox: [number, number, number, number]) => {
-    const p = new URLSearchParams(sp.toString()); p.set("op", op); p.set("bbox", bbox.map((x) => x.toFixed(4)).join(",")); p.set("pp", "60");
-    const r: SearchResult = await fetch(`/api/search?${p}`).then((x) => x.json());
+  const onBounds = (bbox: [number, number, number, number]) => {
+    const p = new URLSearchParams(sp.toString()); p.set("bbox", bbox.map((x) => x.toFixed(4)).join(",")); p.set("pp", "60");
+    const r = search(filtersFromParams(p, op));
     setRes(r); setItems(r.items);
   };
   const ciudad = ciudadPorSlug(res.filtros.ciudad)?.nombre;

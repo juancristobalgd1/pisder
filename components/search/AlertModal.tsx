@@ -8,9 +8,13 @@ export default function AlertModal({ query, params, onClose }: { query: string; 
   const [estado, setEstado] = useState<"idle" | "ok" | "error">("idle");
   const [msg, setMsg] = useState("");
   const enviar = async () => {
-    const r = await fetch("/api/alerts", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ query, params, [canal]: valor }) });
-    const j = await r.json();
-    if (r.ok) { setEstado("ok"); setMsg(`Alerta creada. Caduca el ${new Date(j.expira).toLocaleDateString("es-ES")}; podrás renovarla.`); } else { setEstado("error"); setMsg(j.error); }
+    // Versión estática: la alerta se guarda en este dispositivo. El envío real (WhatsApp/email) necesita backend.
+    const ok = canal === "email" ? /.+@.+\..+/.test(valor) : valor.replace(/\D/g, "").length >= 9;
+    if (!ok) { setEstado("error"); setMsg(canal === "email" ? "Ese email no parece válido." : "Ese número no parece válido."); return; }
+    const expira = new Date(Date.now() + 10 * 86400000);
+    const prev = JSON.parse(localStorage.getItem("pisoya:alertas") || "[]");
+    localStorage.setItem("pisoya:alertas", JSON.stringify([{ query, params, canal, valor, expira }, ...prev]));
+    setEstado("ok"); setMsg(`Alerta guardada. Caduca el ${expira.toLocaleDateString("es-ES")}; podrás renovarla.`);
   };
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={onClose}>
