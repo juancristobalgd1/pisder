@@ -22,4 +22,4 @@ body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antial
 .pill-active { background: #c77dff; color: #24073f; }
 .btn-deep { @apply rounded-full bg-[#5b1a9e] px-5 py-3 text-[15px] font-medium text-white transition hover:bg-[#6a22b5]; }
 .glass-btn { @apply grid place-items-center rounded-full border border-white/25 bg-black/30 backdrop-blur-sm text-white; }
-@media (max-width: 767px) { body { padding-bottom: 96px; } }
+@media (max-width: 767px) { body { padding-bottom: 96px; overflow-x: hidden; } }

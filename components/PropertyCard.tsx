@@ -19,7 +19,7 @@ export default function PropertyCard({ l, compact = false, onHover, onMap }: { l
   const alquiler = l.operacion === "alquilar";
   const visitada = visitadas.includes(l.id);
   return (
-    <Link href={`/inmueble/${l.id}/`} className="group block" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
+    <Link href={`/inmueble/${l.id}/`} className="group block min-w-0" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
       <div className="relative aspect-[16/11] overflow-hidden rounded-[22px] bg-card md:aspect-[4/3] md:rounded-xl"
         onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
         onTouchEnd={(e) => { if (touch.current === null) return; const dx = e.changedTouches[0].clientX - touch.current; if (Math.abs(dx) > 40) go(null, dx < 0 ? 1 : -1); touch.current = null; }}>

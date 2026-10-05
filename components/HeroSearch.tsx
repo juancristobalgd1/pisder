@@ -29,10 +29,10 @@ export default function HeroSearch() {
   return (
     <div className="mx-auto w-full max-w-2xl">
       <div className="rounded-[28px] border border-white/5 bg-[#1c1c1e]/95 p-5 shadow-[0_0_60px_rgba(150,70,255,.35)]">
-        <textarea value={q} onChange={(e) => setQ(e.target.value)} rows={2} enterKeyHint="search"
+        <textarea value={q} onChange={(e) => setQ(e.target.value)} rows={3} enterKeyHint="search"
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); go(); } }}
           placeholder="Describe lo que buscas: zona, habitaciones, precio o sube imágenes.."
-          className="w-full resize-none bg-transparent text-[17px] leading-relaxed text-white outline-none placeholder:text-[#9a9aa0]" />
+          className="w-full resize-none overflow-hidden bg-transparent text-[17px] leading-relaxed text-white outline-none placeholder:text-[#9a9aa0]" />
         <div className="mt-3 flex items-center justify-between">
           <div className="relative">
             <button onClick={() => setOpOpen((v) => !v)} className="flex items-center gap-2 rounded-full bg-[#2a2a2c] px-4 py-2 text-[15px] font-medium text-white">

@@ -30,7 +30,7 @@ function fotosPara(t: Tipo, r: () => number, o: { costa: boolean; cercaPlaya: bo
     case "local": case "oficina": return [F("oficina")];
     case "estudio": f = ["estudio", "bano", "cocina", fachada]; break;
     case "habitacion": f = ["dormitorio", "cocina", "bano", salon]; break;
-    case "chalet": case "casa": f = [o.piscina || o.costa ? "chalet-piscina" : fachada, salon, ...interior.filter((x) => x !== "salon"), ...(o.piscina ? ["piscina-comunitaria"] : [])]; break;
+    case "chalet": case "casa": f = [o.piscina || o.costa ? pick(r, ["chalet-piscina", "chalet-piscina", "piscina-comunitaria", "terraza", ...(o.cercaPlaya ? ["salon-mar"] : [])]) : fachada, "chalet-piscina", salon, ...interior.filter((x) => x !== "salon"), ...(o.piscina ? ["piscina-comunitaria"] : [])]; break;
     case "atico": f = ["terraza", salon, ...interior.filter((x) => x !== "salon")]; break;
     default: f = [r() < 0.35 ? fachada : salon, ...interior.filter((x) => x !== "salon"), ...(o.terraza ? ["terraza"] : []), ...(o.piscina ? ["piscina-comunitaria"] : [])];
   }
