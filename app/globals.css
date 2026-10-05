@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background: #161616; color: #f2f2f2; }
+body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+.eyebrow { @apply text-[11px] font-medium uppercase tracking-[0.14em] text-muted; }
+.h-section { @apply font-serif text-3xl md:text-4xl text-white; }
+.btn-brand { @apply rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(180,110,240,.35)] transition hover:brightness-110; }
+.btn-ghost { @apply rounded-full border border-line bg-surface px-4 py-2 text-sm text-soft transition hover:border-neutral-500 hover:text-white; }
+.chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-soft hover:border-neutral-500 hover:text-white transition; }
+.panel { @apply rounded-2xl border border-line bg-surface; }
+.input { @apply w-full rounded-xl border border-line bg-card px-3 py-2 text-sm text-white placeholder:text-muted outline-none focus:border-brand; }
+.leaflet-container { background: #1b1b1b; font-family: Inter, sans-serif; }
+.price-pin { background: #fff; color: #111; font-weight: 600; font-size: 12px; padding: 3px 8px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.4); white-space: nowrap; }
+.price-pin.active { background: #b46ef0; color: #fff; }
