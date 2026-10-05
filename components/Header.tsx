@@ -14,7 +14,7 @@ const TOOLS = [
 ];
 
 export function Avatar({ nombre, size = 44 }: { nombre: string; size?: number }) {
-  return <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#7b2ff7] to-[#c77dff] p-[2px]"><span className="grid h-full w-full place-items-center rounded-full bg-[#2a1840] text-sm font-semibold">{nombre.slice(0, 1).toUpperCase()}</span></span>;
+  return <span style={{ width: size, height: size }} className="grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#10b981] to-[#34d399] p-[2px]"><span className="grid h-full w-full place-items-center rounded-full bg-[#123328] text-sm font-semibold">{nombre.slice(0, 1).toUpperCase()}</span></span>;
 }
 
 export default function Header() {

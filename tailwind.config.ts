@@ -4,9 +4,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#161616", surface: "#1e1e1e", card: "#232323", line: "#2c2c2c",
+        bg: "#0f1513", surface: "#151c19", card: "#1a231f", line: "#26322d",
         muted: "#8a8a8a", soft: "#bdbdbd",
-        brand: { DEFAULT: "#b46ef0", 400: "#c99af7", 600: "#9a4fe0", 700: "#7e3bc4" },
+        brand: { DEFAULT: "#2fd3a0", 400: "#6ee7c3", 600: "#14b88a", 700: "#0e8f6c" },
         wa: "#25d366",
       },
       fontFamily: {
@@ -14,7 +14,7 @@ const config: Config = {
         sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
       },
       backgroundImage: {
-        "brand-grad": "linear-gradient(135deg,#d08cf5 0%,#a855f7 100%)",
+        "brand-grad": "linear-gradient(135deg,#6ee7c3 0%,#10b981 100%)",
         "card-fade": "linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.75) 100%)",
       },
     },

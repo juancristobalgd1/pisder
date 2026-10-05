@@ -42,7 +42,7 @@ export default function FiltersDrawer({ base, op, onClose, onApply }: { base: Pa
           <section><p className="mb-2 text-soft">Baños</p><Pills k="banosMin" opts={[1, 2, 3]} /></section>
           <section><p className="mb-2 text-soft">Características</p>
             <div className="flex flex-wrap gap-2">{EXTRAS_ALL.map((e) => <button key={e} onClick={() => set({ extras: toggle(f.extras, e) })} className={`chip ${f.extras?.includes(e) ? "border-brand bg-brand/15 text-white" : ""}`}>{extraLabel(e)}</button>)}</div></section>
-          <label className="flex items-center gap-3"><input type="checkbox" checked={!!f.soloParticulares} onChange={(e) => set({ soloParticulares: e.target.checked })} className="h-4 w-4 accent-[#b46ef0]" /> Solo particulares (sin agencia)</label>
+          <label className="flex items-center gap-3"><input type="checkbox" checked={!!f.soloParticulares} onChange={(e) => set({ soloParticulares: e.target.checked })} className="h-4 w-4 accent-[#2fd3a0]" /> Solo particulares (sin agencia)</label>
         </div>
         <div className="flex gap-3 border-t border-line px-5 py-4">
           <button onClick={() => setF({ q: base.q })} className="btn-ghost flex-1">Limpiar</button>

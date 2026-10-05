@@ -60,7 +60,7 @@ export default function PerfilView() {
               <ul className="mt-4 divide-y divide-white/5">
                 {cols.map((c) => (
                   <li key={c.id} className="flex items-center justify-between py-3.5">
-                    <span className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-[#2a1840] text-[#c77dff]"><FolderOpen size={20} /></span><span><span className="block font-medium">{c.nombre}</span><span className="text-sm text-muted">{c.ids.length} propiedades</span></span></span>
+                    <span className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl bg-[#123328] text-[#34d399]"><FolderOpen size={20} /></span><span><span className="block font-medium">{c.nombre}</span><span className="text-sm text-muted">{c.ids.length} propiedades</span></span></span>
                     <button onClick={() => borrar(c.id)} aria-label={`Borrar ${c.nombre}`} className="p-2 text-muted"><Trash2 size={18} /></button>
                   </li>))}
               </ul>
@@ -70,13 +70,13 @@ export default function PerfilView() {
       </div>
 
       <div className="mt-4 rounded-[22px] border border-white/10 bg-[#1a1a1c] p-5">
-        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[20px] font-semibold"><Heart size={20} className="text-[#c77dff]" />Favoritos</span><Link href="/favoritos/" className="text-sm text-soft">Ver todos ({favs.length})</Link></div>
+        <div className="flex items-center justify-between"><span className="flex items-center gap-2 text-[20px] font-semibold"><Heart size={20} className="text-[#34d399]" />Favoritos</span><Link href="/favoritos/" className="text-sm text-soft">Ver todos ({favs.length})</Link></div>
         {favListings.length ? <div className="mt-4 grid gap-6 sm:grid-cols-2">{favListings.map((l) => <PropertyCard key={l!.id} l={l!} compact />)}</div>
           : <p className="mt-3 text-[15px] text-soft">Toca el corazón de cualquier anuncio para guardarlo aquí.</p>}
       </div>
 
       <div className="mt-4 rounded-[22px] border border-white/10 bg-[#1a1a1c] p-5">
-        <span className="flex items-center gap-2 text-[20px] font-semibold"><Bell size={20} className="text-[#c77dff]" />Alertas</span>
+        <span className="flex items-center gap-2 text-[20px] font-semibold"><Bell size={20} className="text-[#34d399]" />Alertas</span>
         {alertas.length ? <ul className="mt-3 space-y-2">{alertas.map((a, k) => (
           <li key={k + a.expira} className="flex items-center justify-between rounded-xl bg-white/[.04] px-4 py-3"><Link href={`/buscar/${a.params}`} className="min-w-0"><span className="block truncate">{a.query}</span><span className="text-xs text-muted">Caduca el {new Date(a.expira).toLocaleDateString("es-ES")}</span></Link><button onClick={() => setAlertas(alertas.filter((_, j) => j !== k))} aria-label="Borrar alerta" className="p-2 text-muted"><X size={16} /></button></li>))}</ul>
           : <p className="mt-3 text-[15px] text-soft">Desde una búsqueda, toca «Crear alerta» y te avisamos de los pisos nuevos.</p>}

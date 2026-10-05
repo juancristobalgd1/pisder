@@ -12,7 +12,7 @@ export default function BottomNav() {
   const p = usePathname() || "/";
   return (
     <nav className="fixed inset-x-0 bottom-4 z-40 flex justify-center md:hidden" aria-label="Navegación principal">
-      <div className="flex items-center gap-1 rounded-full border border-white/10 bg-[#232323]/95 p-1.5 shadow-[0_10px_40px_rgba(0,0,0,.6)] backdrop-blur">
+      <div className="flex items-center gap-1 rounded-full border border-white/10 bg-[#1a231f]/95 p-1.5 shadow-[0_10px_40px_rgba(0,0,0,.6)] backdrop-blur">
         {ITEMS.map(({ href, t, I, match }) => {
           const on = match(p);
           return (

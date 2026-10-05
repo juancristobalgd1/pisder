@@ -28,7 +28,7 @@ export default function PropertyCard({ l, compact = false, onHover, onMap }: { l
         {visitada && <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-[#3b6cff] bg-[#0f1a3d]/85 px-3 py-1 text-[13px] font-medium text-[#8fb0ff]"><Eye size={15} />Visitada</span>}
         {!visitada && l.destacada && <span className="absolute left-3 top-3 rounded-full bg-brand-grad px-2.5 py-1 text-[11px] font-semibold uppercase">Destacado</span>}
         <button aria-label={fav ? "Quitar de favoritos" : "Guardar en favoritos"} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(l.id); }}
-          className="glass-btn absolute right-3 top-3 h-11 w-11 md:h-9 md:w-9"><Heart size={20} className={fav ? "fill-[#c77dff] text-[#c77dff]" : ""} /></button>
+          className="glass-btn absolute right-3 top-3 h-11 w-11 md:h-9 md:w-9"><Heart size={20} className={fav ? "fill-[#34d399] text-[#34d399]" : ""} /></button>
         {n > 1 && (<>
           <button onClick={(e) => go(e, -1)} aria-label="Foto anterior" className="glass-btn absolute left-2.5 top-1/2 h-10 w-10 -translate-y-1/2 md:hidden md:group-hover:grid"><ChevronLeft size={20} /></button>
           <button onClick={(e) => go(e, 1)} aria-label="Foto siguiente" className="glass-btn absolute right-2.5 top-1/2 h-10 w-10 -translate-y-1/2 md:hidden md:group-hover:grid"><ChevronRight size={20} /></button>

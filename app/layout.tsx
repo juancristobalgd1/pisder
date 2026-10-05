@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: `${BRAND.name}: encuentra tu casa ideal en España`,
   description: "Buscador de pisos con IA: todos los portales en una sola búsqueda. Escribe lo que buscas como se lo dirías a una persona.",
 };
-export const viewport: Viewport = { themeColor: "#161616", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#0f1513", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

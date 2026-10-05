@@ -28,7 +28,7 @@ export default function HeroSearch() {
   };
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <div className="rounded-[28px] border border-white/5 bg-[#1c1c1e]/95 p-5 shadow-[0_0_60px_rgba(150,70,255,.35)]">
+      <div className="rounded-[28px] border border-white/5 bg-[#1c1c1e]/95 p-5 shadow-[0_0_60px_rgba(16,185,129,.35)]">
         <textarea value={q} onChange={(e) => setQ(e.target.value)} rows={3} enterKeyHint="search"
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); go(); } }}
           placeholder="Describe lo que buscas: zona, habitaciones, precio o sube imágenes.."
@@ -49,9 +49,9 @@ export default function HeroSearch() {
       </div>
 
       {ultima && (
-        <Link href={ultima.url} className="mt-4 flex items-center gap-4 rounded-[24px] border border-[#3a2a55] bg-gradient-to-r from-[#1f1a2b] to-[#2a2140] px-4 py-3.5">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#3b2a5c] text-white"><RotateCcw size={20} /></span>
-          <span className="min-w-0 flex-1"><span className="block text-[12px] font-medium uppercase tracking-[0.1em] text-[#b9a8d6]">Continuar búsqueda</span><span className="block truncate text-[17px] font-medium text-white">{ultima.q}</span></span>
+        <Link href={ultima.url} className="mt-4 flex items-center gap-4 rounded-[24px] border border-[#1f4a3c] bg-gradient-to-r from-[#15241e] to-[#2a2140] px-4 py-3.5">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1e4d3d] text-white"><RotateCcw size={20} /></span>
+          <span className="min-w-0 flex-1"><span className="block text-[12px] font-medium uppercase tracking-[0.1em] text-[#a9cdbf]">Continuar búsqueda</span><span className="block truncate text-[17px] font-medium text-white">{ultima.q}</span></span>
           <ChevronRight size={22} className="text-white" />
         </Link>
       )}

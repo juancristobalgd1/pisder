@@ -15,8 +15,8 @@ export default function ScamCheck() {
         <label className="text-soft">Superficie (m²)<input className="input mt-1" type="number" value={f.m2} onChange={(e) => set({ m2: +e.target.value })} /></label>
         <label className="text-soft">Nº de fotos<input className="input mt-1" type="number" value={f.fotos} onChange={(e) => set({ fotos: +e.target.value })} /></label>
         <div className="flex flex-col justify-end gap-2 text-soft">
-          <label className="flex items-center gap-2"><input type="checkbox" checked={f.particular} onChange={(e) => set({ particular: e.target.checked })} className="accent-[#b46ef0]" />Lo anuncia un particular</label>
-          <label className="flex items-center gap-2"><input type="checkbox" checked={f.verificado} onChange={(e) => set({ verificado: e.target.checked })} className="accent-[#b46ef0]" />Identidad verificada</label></div>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={f.particular} onChange={(e) => set({ particular: e.target.checked })} className="accent-[#2fd3a0]" />Lo anuncia un particular</label>
+          <label className="flex items-center gap-2"><input type="checkbox" checked={f.verificado} onChange={(e) => set({ verificado: e.target.checked })} className="accent-[#2fd3a0]" />Identidad verificada</label></div>
       </div>
       <label className="block text-soft">Texto del anuncio o de los mensajes<textarea className="input mt-1 h-28" value={f.descripcion} onChange={(e) => set({ descripcion: e.target.value })} placeholder="Pega aquí la descripción o lo que te ha escrito el anunciante" /></label>
       <button className="btn-brand" onClick={() => setRes(riesgoEstafa({ precio: f.precio, m2: f.m2, ciudad: f.ciudad, operacion: f.operacion, fotos: Array(Math.max(0, f.fotos)).fill(""), descripcion: f.descripcion, anunciante: { tipo: f.particular ? "particular" : "agencia", nombre: "", telefono: "", verificado: f.verificado } }))}>Analizar</button>

@@ -75,16 +75,16 @@ export default function SearchView({ op }: { op: Operacion }) {
               : <button type="button" className="p-1.5 text-white" aria-label="Buscar por foto"><ImagePlus size={24} /></button>}
           </form>
           <button onClick={() => setDrawer(true)} aria-label="Filtros" className="relative grid h-[60px] w-[60px] place-items-center rounded-[18px] border border-[#3a3a3e] bg-[#1c1c1e] text-white">
-            <SlidersHorizontal size={24} />{nActivos > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-[#c77dff] text-[12px] font-bold text-[#24073f]">{nActivos}</span>}
+            <SlidersHorizontal size={24} />{nActivos > 0 && <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-[#34d399] text-[12px] font-bold text-[#052e22]">{nActivos}</span>}
           </button>
         </div>
         <div className="-mx-4 mt-3 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
           <button onClick={() => setAlerta(true)} className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><Bell size={18} />Crear alerta</button>
-          {playa ? <span className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] py-2 pl-3 pr-2 text-[13px] font-semibold uppercase tracking-wide text-white"><MapPin size={18} className="text-[#c77dff]" />Cerca de playa<span className="font-normal normal-case text-soft">≤ {playa < 1 ? `${Math.round(playa * 1000)} m` : `${playa.toLocaleString("es-ES")} km`}</span><button onClick={quitarPlaya} aria-label="Quitar" className="p-0.5 text-soft"><X size={17} /></button></span> : null}
+          {playa ? <span className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] py-2 pl-3 pr-2 text-[13px] font-semibold uppercase tracking-wide text-white"><MapPin size={18} className="text-[#34d399]" />Cerca de playa<span className="font-normal normal-case text-soft">≤ {playa < 1 ? `${Math.round(playa * 1000)} m` : `${playa.toLocaleString("es-ES")} km`}</span><button onClick={quitarPlaya} aria-label="Quitar" className="p-0.5 text-soft"><X size={17} /></button></span> : null}
           <div className="relative shrink-0">
-            <button onClick={() => setOpOpen((v) => !v)} className="flex items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><KeyRound size={18} className="text-[#c77dff]" />{op === "alquilar" ? "Alquiler" : "Venta"}</button>
+            <button onClick={() => setOpOpen((v) => !v)} className="flex items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><KeyRound size={18} className="text-[#34d399]" />{op === "alquilar" ? "Alquiler" : "Venta"}</button>
           </div>
-          {!hideAI && chipsIA.map((c) => <span key={c} className="flex shrink-0 items-center rounded-full border border-[#3a2a55] bg-[#1f1a2b] px-3.5 py-2.5 text-[14px] text-[#d9c2ff]">{c}</span>)}
+          {!hideAI && chipsIA.map((c) => <span key={c} className="flex shrink-0 items-center rounded-full border border-[#1f4a3c] bg-[#15241e] px-3.5 py-2.5 text-[14px] text-[#bdf2dc]">{c}</span>)}
         </div>
         {opOpen && <div className="absolute left-4 top-full z-20 -mt-1 w-40 rounded-2xl border border-line bg-[#232325] p-1.5 shadow-xl">{(["alquilar", "comprar"] as const).map((o) => <button key={o} onClick={() => { setOpOpen(false); push(urlBase(), o); }} className={`block w-full rounded-xl px-3 py-2.5 text-left text-[15px] ${o === op ? "text-white" : "text-soft"}`}>{o === "alquilar" ? "Alquiler" : "Venta"}</button>)}</div>}
         <p className="mt-2 text-[13px] text-muted">{res.total.toLocaleString("es-ES")} {res.total === 1 ? "inmueble" : "inmuebles"}{ciudad ? ` en ${res.filtros.barrio ? res.filtros.barrio + ", " : ""}${ciudad.split(" /")[0]}` : ""}{pending ? " · actualizando…" : ""}</p>
