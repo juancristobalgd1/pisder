@@ -39,8 +39,8 @@ export default function PropertyCard({ l, compact = false, onHover, onMap }: { l
       <div className={`${compact ? "mt-2.5" : "mt-3"} space-y-1.5`}>
         <h3 className="truncate text-[17px] font-semibold text-white md:text-[15px]">{l.direccion}, {l.barrio}, {l.ciudad.split(" /")[0]}</h3>
         <p className="flex items-baseline gap-1.5">
-          <span className="text-[30px] font-bold leading-none tracking-tight md:text-2xl">{n0(l.precio)}</span>
-          <span className="text-lg font-semibold text-soft">€{alquiler && <span className="text-sm font-normal">/mes</span>}</span>
+          <span className="text-[26px] font-bold leading-none tracking-tight md:text-[22px]">{n0(l.precio)}</span>
+          <span className="text-base font-semibold text-soft">€{alquiler && <span className="text-sm font-normal">/mes</span>}</span>
           {l.gastosComunidad && !compact && <span className="ml-1 text-xs text-muted">+ {n0(l.gastosComunidad)} € comunidad</span>}
         </p>
         <p className="flex flex-wrap items-center gap-x-3 text-[16px] text-soft md:text-[13px]">

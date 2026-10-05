@@ -1,5 +1,6 @@
 import { CALLES, CIUDADES, PLAYAS, km } from "./geo";
 import { asset } from "./asset";
+import REAL from "../data/real.json";
 import type { Listing, Tipo, Fuente, Operacion } from "./types";
 
 // Generador determinista de anuncios DEMO. En producción lo sustituye la tabla `listings` (ver /ingest).
@@ -119,5 +120,7 @@ export const extraLabel = (e: string) => EXTRA_LABEL[e] ?? e;
 export const EXTRAS_ALL = Object.keys(EXTRA_LABEL);
 
 let cache: Listing[] | null = null;
-export function allListings(): Listing[] { return (cache ??= generar()); }
+// Si hay anuncios reales importados (ingest/kyero.ts), se muestran primero y la demo se marca como tal.
+export const HAY_REALES = (REAL as unknown[]).length > 0;
+export function allListings(): Listing[] { return (cache ??= [...(REAL as unknown as Listing[]), ...generar()]); }
 export function getListing(id: string) { return allListings().find((l) => l.id === id); }

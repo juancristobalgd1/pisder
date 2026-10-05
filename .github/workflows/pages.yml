@@ -1,5 +1,7 @@
 name: Publicar en GitHub Pages
 on:
+  schedule:
+    - cron: "30 4 * * *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -20,6 +22,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npx tsx ingest/kyero.ts
       - run: npm test
       - run: npm run build
         env:

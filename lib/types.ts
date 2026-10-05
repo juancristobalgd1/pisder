@@ -26,7 +26,9 @@ export interface Listing {
   fuentes: { nombre: Fuente; url: string; precio: number }[]; // misma vivienda en varios portales (deduplicada)
   anunciante: { tipo: "agencia" | "particular"; nombre: string; telefono: string; verificado: boolean };
   publicadoEn: string;     // ISO
-  distPlaya?: number;       // km a la playa más cercana (ciudades de costa)
+  distPlaya?: number;
+  real?: boolean;           // anuncio real importado de un feed de inmobiliaria
+  ref?: string;       // km a la playa más cercana (ciudades de costa)
   eficiencia?: "A" | "B" | "C" | "D" | "E" | "F" | "G";
   destacada?: boolean;
 }
