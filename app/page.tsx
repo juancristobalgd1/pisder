@@ -39,13 +39,13 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden px-5 pb-28 pt-28 md:min-h-[640px] md:pb-16 md:pt-32">
+      <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden px-5 pb-28 pt-24 md:min-h-[640px] md:pb-16 md:pt-32">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset("/img/hero-paseo-m.webp")} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover md:hidden" />
+        <img src={asset("/img/hero-valle-m.webp")} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover md:hidden" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={asset("/img/hero-paseo-w.webp")} alt="" className="absolute inset-0 -z-10 hidden h-full w-full object-cover md:block" />
+        <img src={asset("/img/hero-valle-w.webp")} alt="" className="absolute inset-0 -z-10 hidden h-full w-full object-cover md:block" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/30 via-black/10 to-bg" />
-        <h1 className="mx-auto mt-[22vh] max-w-3xl text-center font-serif text-[44px] font-bold leading-[1.08] text-white md:mt-6 md:text-7xl">
+        <h1 className="mx-auto mt-[3vh] max-w-3xl text-center font-serif text-[38px] font-bold leading-[1.08] text-white md:mt-6 md:text-7xl">
           Busca <em className="font-semibold italic">pisos</em><br />como te los imaginas
         </h1>
         <div className="mt-10"><HeroSearch /></div>
