@@ -8,8 +8,8 @@ html, body { background: #0f1513; color: #f2f2f2; }
 body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
-.eyebrow { @apply text-[11px] font-medium uppercase tracking-[0.14em] text-muted; }
-.h-section { @apply font-serif text-3xl md:text-4xl text-white; }
+.eyebrow { @apply text-[10px] font-medium uppercase tracking-[0.16em] text-muted; }
+.h-section { @apply font-serif text-[24px] leading-tight md:text-4xl text-white; }
 .btn-brand { @apply rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_24px_rgba(16,185,129,.35)] transition hover:brightness-110; }
 .btn-ghost { @apply rounded-full border border-line bg-surface px-4 py-2 text-sm text-soft transition hover:border-neutral-500 hover:text-white; }
 .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-soft hover:border-neutral-500 hover:text-white transition; }

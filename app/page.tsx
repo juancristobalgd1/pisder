@@ -44,7 +44,7 @@ export default function Home() {
         <img src={asset("/img/hero-mobile.webp")} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover md:hidden" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={asset("/img/hero-wide.webp")} alt="" className="absolute inset-0 -z-10 hidden h-full w-full object-cover md:block" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/20 via-transparent to-bg" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/30 via-black/10 to-bg" />
         <h1 className="mx-auto mt-[22vh] max-w-3xl text-center font-serif text-[44px] font-bold leading-[1.08] text-white md:mt-6 md:text-7xl">
           Busca <em className="font-semibold italic">pisos</em><br />como te los imaginas
         </h1>
@@ -80,12 +80,12 @@ export default function Home() {
 
         <section>
           <SectionHeader eyebrow="Nuevos y destacados" title="Lo último en Madrid" href="/buscar/alquilar?ciudad=madrid" />
-          <Carousel>{madrid.map((l) => <div key={l.id} className="w-[260px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
+          <Carousel>{madrid.map((l) => <div key={l.id} className="w-[280px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
         </section>
 
         <section>
           <SectionHeader eyebrow="Selección" title="Terrazas que inspiran" href="/buscar/comprar?extras=terraza" />
-          <Carousel>{vistas.map((l) => <div key={l.id} className="w-[260px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
+          <Carousel>{vistas.map((l) => <div key={l.id} className="w-[280px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
         </section>
 
         {barrios.map(([c, b]) => {
@@ -93,7 +93,7 @@ export default function Home() {
           return (
             <section key={b}>
               <SectionHeader eyebrow={`${items.length} anuncios recientes`} title={`Lo último en ${b}`} href={`/buscar/alquilar?ciudad=${c}&barrio=${encodeURIComponent(b)}`} />
-              <Carousel>{items.map((l) => <div key={l.id} className="w-[260px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
+              <Carousel>{items.map((l) => <div key={l.id} className="w-[280px] shrink-0 snap-start md:w-[290px]"><PropertyCard l={l} compact /></div>)}</Carousel>
             </section>
           );
         })}

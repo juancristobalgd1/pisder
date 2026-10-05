@@ -18,6 +18,34 @@ export default function PropertyCard({ l, compact = false, onHover, onMap }: { l
   const go = (e: React.MouseEvent | null, d: number) => { e?.preventDefault(); e?.stopPropagation(); setI((v) => (v + d + n) % n); };
   const alquiler = l.operacion === "alquilar";
   const visitada = visitadas.includes(l.id);
+  if (compact) return (
+    <Link href={`/inmueble/${l.id}/`} className="group block min-w-0" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
+      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-card"
+        onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => { if (touch.current === null) return; const dx = e.changedTouches[0].clientX - touch.current; if (Math.abs(dx) > 40) go(null, dx < 0 ? 1 : -1); touch.current = null; }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={l.fotos[i]} alt={`Foto de ${l.titulo}`} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent" />
+        {visitada && <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm"><Eye size={12} />Visitada</span>}
+        {!visitada && l.destacada && <span className="absolute left-2.5 top-2.5 rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#ecd5a3] backdrop-blur-sm">Destacado</span>}
+        <button aria-label={fav ? "Quitar de favoritos" : "Guardar en favoritos"} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(l.id); }}
+          className="glass-btn absolute right-2.5 top-2.5 h-8 w-8"><Heart size={16} className={fav ? "fill-[#34d399] text-[#34d399]" : ""} /></button>
+        {n > 1 && <button onClick={(e) => go(e, 1)} aria-label="Foto siguiente" className="glass-btn absolute right-2.5 top-1/2 h-8 w-8 -translate-y-1/2 md:opacity-0 md:group-hover:opacity-100"><ChevronRight size={16} /></button>}
+        <p className="absolute bottom-2.5 left-3 flex items-baseline gap-1 text-white">
+          <span className="text-[15px] font-semibold tracking-tight">{n0(l.precio)} €</span>{alquiler && <span className="text-[11px] text-white/80">/mes</span>}
+        </p>
+        {n > 1 && <div className="absolute bottom-3.5 right-3 flex items-center gap-1">{Array.from({ length: n }).map((_, k) => <span key={k} className={`h-1 rounded-full ${k === i ? "w-3 bg-white" : "w-1 bg-white/55"}`} />)}</div>}
+      </div>
+      <div className="mt-2 space-y-0.5">
+        <h3 className="truncate text-[13px] text-soft">{l.direccion}, {l.barrio}</h3>
+        <p className="flex items-center gap-2.5 text-[12px] text-muted">
+          {l.habitaciones > 0 ? <span className="flex items-center gap-1"><BedDouble size={13} />{l.habitaciones} hab</span> : <span className="capitalize">{l.tipo}</span>}
+          {l.banos > 0 && <span className="flex items-center gap-1"><Bath size={13} />{l.banos}</span>}
+          <span className="flex items-center gap-1"><Ruler size={13} />{l.m2} m²</span>
+        </p>
+      </div>
+    </Link>
+  );
   return (
     <Link href={`/inmueble/${l.id}/`} className="group block min-w-0" onMouseEnter={() => onHover?.(l.id)} onMouseLeave={() => onHover?.(null)}>
       <div className="relative aspect-[16/11] overflow-hidden rounded-[22px] bg-card md:aspect-[4/3] md:rounded-xl"
