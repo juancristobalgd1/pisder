@@ -47,10 +47,12 @@ export function cargarMotor(vision: boolean, progreso?: (pct: number) => void): 
       progreso?.(Math.min(99, Math.round((a / b) * 100)));
     };
     const processor = await T.AutoProcessor.from_pretrained(MODELO, { progress_callback });
+    // WebGPU solo si el navegador da un adaptador real; si no (muchos móviles), WASM en la CPU
+    let gpu = false;
+    try { gpu = !!(await (navigator as any).gpu?.requestAdapter()); } catch { gpu = false; } // eslint-disable-line @typescript-eslint/no-explicit-any
     let model;
-    const gpu = typeof navigator !== "undefined" && "gpu" in navigator;
     try { model = await T.AutoModel.from_pretrained(MODELO, { config, dtype: "q4", device: gpu ? "webgpu" : "wasm", progress_callback }); }
-    catch { model = await T.AutoModel.from_pretrained(MODELO, { config, dtype: "q4", device: "wasm", progress_callback }); }
+    catch (e) { if (!gpu) throw e; model = await T.AutoModel.from_pretrained(MODELO, { config, dtype: "q4", device: "wasm", progress_callback }); }
     progreso?.(100);
     const embed = async (texto: string | null, img?: unknown) => {
       const out = await model(await (img ? processor(null, img) : processor([texto])));
