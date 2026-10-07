@@ -50,6 +50,12 @@ export function cargarMotor(vision: boolean, progreso?: (pct: number) => void): 
     // WebGPU solo si el navegador da un adaptador real; si no (muchos móviles), WASM en la CPU
     let gpu = false;
     try { gpu = !!(await (navigator as any).gpu?.requestAdapter()); } catch { gpu = false; } // eslint-disable-line @typescript-eslint/no-explicit-any
+    // Sin GPU: el ejecutable de ONNX que trae el paquete (el de WebGPU) no sabe leer los pesos
+    // comprimidos del modelo; el ejecutable normal de CPU sí, así que usamos ese.
+    if (!gpu) {
+      const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/";
+      T.env.backends.onnx.wasm.wasmPaths = { mjs: ORT + "ort-wasm-simd-threaded.mjs", wasm: ORT + "ort-wasm-simd-threaded.wasm" };
+    }
     let model;
     try { model = await T.AutoModel.from_pretrained(MODELO, { config, dtype: "q4", device: gpu ? "webgpu" : "wasm", progress_callback }); }
     catch (e) { if (!gpu) throw e; model = await T.AutoModel.from_pretrained(MODELO, { config, dtype: "q4", device: "wasm", progress_callback }); }
