@@ -1,3 +1,4 @@
+import { slugProvincia } from "@/lib/provincias";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -36,7 +37,7 @@ export default function Inmueble({ params }: { params: { id: string } }) {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-10 pt-4 md:px-6">
       <MarkVisited id={l.id} />
-      <Link href={`/buscar/${l.operacion}?ciudad=${c.slug}`} className="mb-4 inline-flex items-center gap-1 text-sm text-soft hover:text-white"><ChevronLeft size={16} /> Volver a resultados</Link>
+      <Link href={`/buscar/${l.operacion}?provincia=${slugProvincia(l.provincia) ?? ""}`} className="mb-4 inline-flex items-center gap-1 text-sm text-soft hover:text-white"><ChevronLeft size={16} /> Volver a resultados</Link>
       <Gallery fotos={l.fotos} titulo={l.titulo} />
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>

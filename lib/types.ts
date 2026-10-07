@@ -36,6 +36,7 @@ export interface Listing {
 export interface SearchFilters {
   q?: string;
   operacion: Operacion;
+  provincia?: string;
   ciudad?: string;
   barrio?: string;
   tipos?: Tipo[];

@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { ArrowDownUp, Bell, Camera, ChevronDown, Columns2, EyeOff, ImagePlus, KeyRound, LayoutList, List, Map as MapIcon, MapPin, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { saveLastSearch } from "../useLocal";
 import type { Operacion, SearchFilters, SearchResult } from "@/lib/types";
-import { filtersFromParams, filtersToParams, search } from "@/lib/search";
+import { conteoProvincias, filtersFromParams, filtersToParams, search } from "@/lib/search";
 import { ciudadPorSlug } from "@/lib/geo";
+import { PROVINCIAS, PROV_KEY, provinciaCercana, provinciaPorSlug } from "@/lib/provincias";
 import PropertyCard from "../PropertyCard";
 import FiltersDrawer from "./FiltersDrawer";
 import AlertModal from "./AlertModal";
@@ -38,12 +39,31 @@ export default function SearchView({ op }: { op: Operacion }) {
   useEffect(() => { setRes(initial); setItems(initial.items); setQ(initial.filtros.q ?? ""); setIa(null); }, [initial]);
   useEffect(() => { const qq = sp.get("q"); if (qq) saveLastSearch(qq, `/buscar/${op}/?${sp.toString()}`); }, [sp, op]);
 
+  // Provincia por defecto: la que elegiste la última vez o, si es la primera visita, la de tu ubicación
+  const [ubicando, setUbicando] = useState(false);
+  useEffect(() => {
+    if (sp.get("provincia") || sp.get("ciudad") || sp.get("bbox")) return;
+    let guardada: string | null = null;
+    try { guardada = localStorage.getItem(PROV_KEY); } catch {}
+    const aplicar = (slug: string) => { const p = new URLSearchParams(sp.toString()); p.set("provincia", slug); router.replace(`/buscar/${op}?${p.toString()}`, { scroll: false }); };
+    if (guardada !== null) { if (guardada) aplicar(guardada); return; }
+    if (!("geolocation" in navigator)) return;
+    setUbicando(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setUbicando(false); const pr = provinciaCercana(pos.coords.latitude, pos.coords.longitude); try { localStorage.setItem(PROV_KEY, pr?.slug ?? ""); } catch {} if (pr) aplicar(pr.slug); },
+      () => { setUbicando(false); try { localStorage.setItem(PROV_KEY, ""); } catch {} },
+      { timeout: 10000, maximumAge: 3600000 },
+    );
+  }, []); // eslint-disable-line
+  const cuentaProv = useMemo(() => conteoProvincias(op), [op]);
+  const elegirProvincia = (slug: string) => { try { localStorage.setItem(PROV_KEY, slug); } catch {} push({ ...urlBase(), provincia: slug || undefined, ciudad: undefined, barrio: undefined }); };
+
   const push = (f: Partial<SearchFilters>, o: Operacion = op) => start(() => router.push(`/buscar/${o}?${filtersToParams(f)}`, { scroll: false }));
   // Base = lo que hay en la URL (no lo interpretado), para no "congelar" la interpretación
   const urlBase = (): Partial<SearchFilters> => {
     const o: Partial<SearchFilters> = { q: sp.get("q") ?? "" };
     const n = (k: string) => (sp.get(k) ? Number(sp.get(k)) : undefined);
-    o.ciudad = sp.get("ciudad") ?? undefined; o.barrio = sp.get("barrio") ?? undefined;
+    o.provincia = sp.get("provincia") ?? undefined; o.ciudad = sp.get("ciudad") ?? undefined; o.barrio = sp.get("barrio") ?? undefined;
     o.tipos = sp.get("tipo")?.split(",") as SearchFilters["tipos"]; o.extras = sp.get("extras")?.split(",");
     o.precioMin = n("pmin"); o.precioMax = n("pmax"); o.m2Min = n("m2min"); o.habMin = n("hab"); o.banosMin = n("banos");
     o.soloParticulares = sp.get("part") === "1"; o.cercaPlayaKm = n("playa"); o.orden = (sp.get("orden") as SearchFilters["orden"]) ?? undefined;
@@ -61,7 +81,16 @@ export default function SearchView({ op }: { op: Operacion }) {
     const r = search(filtersFromParams(p, op));
     setRes(r); setItems(r.items);
   };
-  const ciudad = ciudadPorSlug(res.filtros.ciudad)?.nombre;
+  const ciudad = ciudadPorSlug(res.filtros.ciudad)?.nombre ?? provinciaPorSlug(res.filtros.provincia)?.nombre;
+  const provSel = res.filtros.provincia ?? "";
+  const SelectProv = ({ movil }: { movil?: boolean }) => (
+    <label className={movil ? "relative flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white" : "chip relative"}>
+      <MapPin size={movil ? 18 : 12} className="text-[#34d399]" />{ubicando ? "Ubicando…" : provinciaPorSlug(provSel)?.nombre ?? "Toda España"}<ChevronDown size={movil ? 16 : 12} />
+      <select aria-label="Provincia" value={provSel} onChange={(e) => elegirProvincia(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
+        <option value="">Toda España</option>{PROVINCIAS.map((p) => <option key={p.slug} value={p.slug}>{p.nombre}{cuentaProv[p.slug] ? ` (${cuentaProv[p.slug].toLocaleString("es-ES")})` : ""}</option>)}
+      </select>
+    </label>
+  );
   const submitQ = () => push({ ...urlBase(), q, tipos: undefined, extras: undefined, precioMax: undefined, precioMin: undefined, habMin: undefined, ciudad: undefined, barrio: undefined, m2Min: undefined, cercaPlayaKm: undefined });
   const playa = res.filtros.cercaPlayaKm;
   const quitarPlaya = () => { const nq = (sp.get("q") ?? "").replace(/\s*(?:a\s*)?(?:menos de\s*)?\d*[.,]?\d*\s*(?:km|m|metros|kilometros?)?\s*(?:cerca\s+)?(?:de\s+|en\s+)?(?:la\s+)?playa/gi, "").trim(); setQ(nq); push({ ...urlBase(), q: nq, cercaPlayaKm: undefined }); };
@@ -86,6 +115,7 @@ export default function SearchView({ op }: { op: Operacion }) {
           <button onClick={() => setAlerta(true)} className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><Bell size={18} />Crear alerta</button>
           <button onClick={() => setIaModo("frase")} className="flex shrink-0 items-center gap-2 rounded-full border border-[#1f4a3c] bg-[#15241e] px-4 py-2.5 text-[15px] font-medium text-[#bdf2dc]"><Sparkles size={18} />Por parecido</button>
           {playa ? <span className="flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] py-2 pl-3 pr-2 text-[13px] font-semibold uppercase tracking-wide text-white"><MapPin size={18} className="text-[#34d399]" />Cerca de playa<span className="font-normal normal-case text-soft">≤ {playa < 1 ? `${Math.round(playa * 1000)} m` : `${playa.toLocaleString("es-ES")} km`}</span><button onClick={quitarPlaya} aria-label="Quitar" className="p-0.5 text-soft"><X size={17} /></button></span> : null}
+          <SelectProv movil />
           <div className="relative shrink-0">
             <button onClick={() => setOpOpen((v) => !v)} className="flex items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white"><KeyRound size={18} className="text-[#34d399]" />{op === "alquilar" ? "Alquiler" : "Venta"}</button>
           </div>
@@ -110,6 +140,7 @@ export default function SearchView({ op }: { op: Operacion }) {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button onClick={() => setAlerta(true)} className="inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-3 py-1.5 text-xs font-medium"><Bell size={13} /> Crear alerta</button>
           <button onClick={() => setIaModo("frase")} className="chip border-brand/40 text-brand-400"><Sparkles size={12} />Por parecido</button>
+          <SelectProv />
           <div className="relative">
             <button onClick={() => setOpOpen((v) => !v)} className="chip"><Sparkles size={12} />{op === "alquilar" ? "Alquiler" : "Venta"}<ChevronDown size={12} /></button>
           </div>
@@ -147,7 +178,7 @@ export default function SearchView({ op }: { op: Operacion }) {
 
       {!ia && res.total === 0 && (
         <div className="panel mx-auto max-w-lg p-8 text-center"><p className="font-serif text-2xl">Sin resultados por ahora</p><p className="mt-2 text-sm text-soft">Prueba a quitar algún filtro o crea una alerta y te avisamos cuando aparezca.</p>
-          <button onClick={() => setAlerta(true)} className="btn-brand mt-5">Crear alerta</button></div>
+          <div className="mt-5 flex flex-wrap justify-center gap-2"><button onClick={() => setAlerta(true)} className="btn-brand">Crear alerta</button>{provSel && <button onClick={() => elegirProvincia("")} className="btn-ghost">Ver toda España</button>}</div></div>
       )}
 
       {vista === "mapa" ? (

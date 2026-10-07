@@ -1,6 +1,7 @@
 import { allListings } from "./data";
 import { parseQuery } from "./nlparse";
 import { ciudadPorSlug, norm } from "./geo";
+import { slugProvincia } from "./provincias";
 import type { Listing, SearchFilters, SearchResult } from "./types";
 
 export function filtersFromParams(sp: URLSearchParams | Record<string, string | string[] | undefined>, operacion?: string): SearchFilters {
@@ -11,7 +12,7 @@ export function filtersFromParams(sp: URLSearchParams | Record<string, string | 
   return {
     q: get("q") ?? "",
     operacion: (operacion ?? get("op") ?? "alquilar") === "comprar" ? "comprar" : "alquilar",
-    ciudad: get("ciudad"), barrio: get("barrio"),
+    provincia: get("provincia"), ciudad: get("ciudad"), barrio: get("barrio"),
     tipos: list("tipo") as SearchFilters["tipos"],
     precioMin: n("pmin"), precioMax: n("pmax"), m2Min: n("m2min"), m2Max: n("m2max"),
     habMin: n("hab"), banosMin: n("banos"), extras: list("extras"),
@@ -26,6 +27,7 @@ export function filtersFromParams(sp: URLSearchParams | Record<string, string | 
 export function filtersToParams(f: Partial<SearchFilters>): string {
   const p = new URLSearchParams();
   if (f.q) p.set("q", f.q);
+  if (f.provincia) p.set("provincia", f.provincia);
   if (f.ciudad) p.set("ciudad", f.ciudad);
   if (f.barrio) p.set("barrio", f.barrio);
   if (f.tipos?.length) p.set("tipo", f.tipos.join(","));
@@ -61,9 +63,12 @@ export function search(input: SearchFilters): SearchResult {
     f = { ...parsed.filtros, ...explicit, q: f.q };
     chips = parsed.chips;
   }
+  // Si la búsqueda nombra un pueblo o ciudad de otra provincia, manda el sitio concreto
+  if (f.ciudad && f.provincia && slugProvincia(ciudadPorSlug(f.ciudad)?.provincia) !== f.provincia) f = { ...f, provincia: undefined };
   const terms = norm(f.q ?? "").split(/\s+/);
   let items = allListings().filter((l) => {
     if (l.operacion !== f.operacion) return false;
+    if (f.provincia && slugProvincia(l.provincia) !== f.provincia) return false;
     if (f.ciudad && ciudadPorSlug(f.ciudad)?.nombre !== l.ciudad) return false;
     if (f.barrio && norm(f.barrio) !== norm(l.barrio)) return false;
     if (f.tipos?.length && !f.tipos.includes(l.tipo)) return false;
@@ -97,4 +102,11 @@ export function search(input: SearchFilters): SearchResult {
 
 export function latestIn(ciudad?: string, barrio?: string, n = 8) {
   return search({ operacion: "alquilar", ciudad, barrio, perPage: n, orden: "recientes" }).items;
+}
+
+// Nº de anuncios por provincia (para el selector)
+export function conteoProvincias(op: SearchFilters["operacion"]) {
+  const m: Record<string, number> = {};
+  for (const l of allListings()) if (l.operacion === op) { const k = slugProvincia(l.provincia); if (k) m[k] = (m[k] ?? 0) + 1; }
+  return m;
 }
