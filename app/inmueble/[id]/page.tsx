@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Bath, BedDouble, Building2, ChevronLeft, ExternalLink, Leaf, MapPin, Phone, Ruler, ShieldCheck } from "lucide-react";
-import { allListings, extraLabel, getListing, tipoLabel } from "@/lib/data";
+import { Bath, BedDouble, Building2, ChevronLeft, ExternalLink, Leaf, Copy, MapPin, Phone, Ruler, ShieldCheck } from "lucide-react";
+import { duplicadosDe, extraLabel, getListing, principalDe, tipoLabel, todosLosAnuncios } from "@/lib/data";
 import { search } from "@/lib/search";
 import { CIUDADES } from "@/lib/geo";
 import { eur, hace } from "@/lib/format";
@@ -14,7 +14,7 @@ import ContactBox from "@/components/detail/ContactBox";
 import PropertyCard from "@/components/PropertyCard";
 
 export const dynamicParams = false;
-export function generateStaticParams() { return allListings().map((l) => ({ id: l.id })); }
+export function generateStaticParams() { return todosLosAnuncios().map((l) => ({ id: l.id })); }
 
 export function generateMetadata({ params }: { params: { id: string } }): Metadata {
   const l = getListing(params.id);
@@ -29,6 +29,8 @@ export default function Inmueble({ params }: { params: { id: string } }) {
   const pm2 = l.precio / l.m2;
   const diff = Math.round((pm2 / (ref * (c.barrios.find((b) => b.nombre === l.barrio)?.factor ?? 1)) - 1) * 100);
   const risk = riesgoEstafa(l);
+  const principal = principalDe(l.id) ? getListing(principalDe(l.id)) : undefined;
+  const dups = duplicadosDe(l.id);
   const similares = search({ operacion: l.operacion, ciudad: c.slug, tipos: [l.tipo], perPage: 9 }).items.filter((x) => x.id !== l.id).slice(0, 8);
   const osm = `https://www.openstreetmap.org/export/embed.html?bbox=${l.lng - 0.008},${l.lat - 0.005},${l.lng + 0.008},${l.lat + 0.005}&layer=mapnik&marker=${l.lat},${l.lng}`;
   return (
@@ -53,6 +55,8 @@ export default function Inmueble({ params }: { params: { id: string } }) {
             {[[BedDouble, l.habitaciones ? `${l.habitaciones} hab.` : tipoLabel(l.tipo)], [Bath, `${l.banos} baño${l.banos !== 1 ? "s" : ""}`], [Ruler, `${l.m2} m²`], [Building2, l.planta ? `Planta ${l.planta}` : "—"]].map(([I, t], i) => {
               const Icon = I as typeof Ruler; return <div key={i} className="panel flex items-center gap-2 p-3 text-sm"><Icon size={16} className="text-muted" />{t as string}</div>; })}
           </div>
+          {principal && <Link href={`/inmueble/${principal.id}/`} className="mt-5 flex items-center gap-2 rounded-xl border border-[#1f4a3c] bg-[#15241e] px-4 py-3 text-sm text-[#bdf2dc]"><Copy size={16} />Este inmueble ya aparece en otro anuncio ({principal.fuente}, {eur(principal.precio)}). Ver el anuncio principal</Link>}
+          {dups.length > 0 && <div className="mt-5 flex items-start gap-2 rounded-xl border border-[#1f4a3c] bg-[#15241e] px-4 py-3 text-sm text-[#bdf2dc]"><Copy size={16} className="mt-0.5 shrink-0" /><span>Lo hemos visto anunciado {dups.length === 1 ? "otra vez" : `${dups.length} veces más`}: {dups.map((d, i) => <Link key={d.id} href={`/inmueble/${d.id}/`} className="underline">{i ? ", " : ""}{d.fuente} a {eur(d.precio)}</Link>)}. Te lo mostramos una sola vez.</span></div>}
           <h2 className="mt-8 text-lg font-medium">Descripción</h2><p className="mt-2 leading-relaxed text-soft">{l.descripcion}</p>
           {l.extras.length > 0 && <><h2 className="mt-8 text-lg font-medium">Características</h2>
             <div className="mt-3 flex flex-wrap gap-2">{l.extras.map((e) => <span key={e} className="chip">{extraLabel(e)}</span>)}{l.eficiencia && <span className="chip"><Leaf size={12} />Certificado {l.eficiencia}</span>}</div></>}

@@ -1,6 +1,7 @@
 import { CALLES, CIUDADES, PLAYAS, km } from "./geo";
 import { asset } from "./asset";
 import REAL from "../data/real.json";
+import DUP from "../data/duplicados.json";
 import type { Listing, Tipo, Fuente, Operacion } from "./types";
 
 // Generador determinista de anuncios DEMO. En producción lo sustituye la tabla `listings` (ver /ingest).
@@ -122,5 +123,13 @@ export const EXTRAS_ALL = Object.keys(EXTRA_LABEL);
 let cache: Listing[] | null = null;
 // Si hay anuncios reales importados (ingest/kyero.ts), se muestran primero y la demo se marca como tal.
 export const HAY_REALES = (REAL as unknown[]).length > 0;
-export function allListings(): Listing[] { return (cache ??= [...(REAL as unknown as Listing[]), ...generar()]); }
-export function getListing(id: string) { return allListings().find((l) => l.id === id); }
+// Duplicados detectados por IA (mismas fotos o mismo texto, mismo sitio y características): se ocultan de los resultados
+const OCULTOS = DUP as Record<string, string>;
+let full: Listing[] | null = null;
+export function todosLosAnuncios(): Listing[] { return (full ??= [...(REAL as unknown as Listing[]), ...generar()]); }
+export function allListings(): Listing[] { return (cache ??= todosLosAnuncios().filter((l) => !OCULTOS[l.id])); }
+export function getListing(id: string) { return todosLosAnuncios().find((l) => l.id === id); }
+/** Si este anuncio es un duplicado oculto, el id del que se muestra */
+export const principalDe = (id: string) => OCULTOS[id];
+/** Anuncios ocultos por ser el mismo inmueble que este */
+export const duplicadosDe = (id: string) => Object.keys(OCULTOS).filter((k) => OCULTOS[k] === id).map(getListing).filter(Boolean) as Listing[];

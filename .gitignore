@@ -4,3 +4,10 @@ out/
 .env*
 !.env.example
 *.tsbuildinfo
+
+# Privado / pesado: no subir
+ingest/envio_*
+ingest/lote*_pend.json
+ingest/ia/parts/
+ingest/ia/*.npy
+ingest/ia/anuncios.json
