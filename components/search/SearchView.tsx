@@ -84,9 +84,9 @@ export default function SearchView({ op }: { op: Operacion }) {
   const ciudad = ciudadPorSlug(res.filtros.ciudad)?.nombre ?? provinciaPorSlug(res.filtros.provincia)?.nombre;
   const provSel = res.filtros.provincia ?? "";
   const SelectProv = ({ movil }: { movil?: boolean }) => (
-    <label className={movil ? "relative flex shrink-0 items-center gap-2 rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white" : "chip relative"}>
+    <label className={movil ? "relative flex shrink-0 items-center gap-2 overflow-hidden whitespace-nowrap rounded-full border border-[#3a3a3e] bg-[#1c1c1e] px-4 py-2.5 text-[15px] font-medium text-white" : "chip relative overflow-hidden whitespace-nowrap"}>
       <MapPin size={movil ? 18 : 12} className="text-[#34d399]" />{ubicando ? "Ubicando…" : provinciaPorSlug(provSel)?.nombre ?? "Toda España"}<ChevronDown size={movil ? 16 : 12} />
-      <select aria-label="Provincia" value={provSel} onChange={(e) => elegirProvincia(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0">
+      <select aria-label="Provincia" value={provSel} onChange={(e) => elegirProvincia(e.target.value)} className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0">
         <option value="">Toda España</option>{PROVINCIAS.map((p) => <option key={p.slug} value={p.slug}>{p.nombre}{cuentaProv[p.slug] ? ` (${cuentaProv[p.slug].toLocaleString("es-ES")})` : ""}</option>)}
       </select>
     </label>
