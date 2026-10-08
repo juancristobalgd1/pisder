@@ -1,32 +1,29 @@
 "use client";
 import { useState } from "react";
 import { Bell, X } from "lucide-react";
+import { activar } from "@/lib/alertas";
 
 export default function AlertModal({ query, params, onClose }: { query: string; params: string; onClose: () => void }) {
-  const [canal, setCanal] = useState<"whatsapp" | "email">("whatsapp");
-  const [valor, setValor] = useState("");
-  const [estado, setEstado] = useState<"idle" | "ok" | "error">("idle");
+  const [estado, setEstado] = useState<"idle" | "cargando" | "ok" | "error">("idle");
   const [msg, setMsg] = useState("");
   const enviar = async () => {
-    // Versión estática: la alerta se guarda en este dispositivo. El envío real (WhatsApp/email) necesita backend.
-    const ok = canal === "email" ? /.+@.+\..+/.test(valor) : valor.replace(/\D/g, "").length >= 9;
-    if (!ok) { setEstado("error"); setMsg(canal === "email" ? "Ese email no parece válido." : "Ese número no parece válido."); return; }
-    const expira = new Date(Date.now() + 10 * 86400000);
-    const prev = JSON.parse(localStorage.getItem("pisoya:alertas") || "[]");
-    localStorage.setItem("pisoya:alertas", JSON.stringify([{ query, params, canal, valor, expira }, ...prev]));
-    setEstado("ok"); setMsg(`Alerta guardada. Caduca el ${expira.toLocaleDateString("es-ES")}; podrás renovarla.`);
+    setEstado("cargando");
+    const r = await activar(query, params);
+    setEstado(r.ok ? "ok" : "error"); setMsg(r.msg);
   };
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onClick={onClose}>
       <div className="panel w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between"><div className="flex items-center gap-2"><Bell size={18} className="text-brand-400" /><p className="font-medium">Crear alerta instantánea</p></div><button onClick={onClose} aria-label="Cerrar"><X size={18} /></button></div>
-        <p className="mt-2 text-sm text-soft">Te avisamos en cuanto aparezca un anuncio nuevo para «{query}».</p>
+        <p className="mt-2 text-sm text-soft">Te avisamos con una notificación en este móvil en cuanto aparezca un piso nuevo para «{query}».</p>
         <div className="mt-5 flex rounded-full border border-line bg-card p-0.5 text-sm">
-          {(["whatsapp", "email"] as const).map((c) => <button key={c} onClick={() => setCanal(c)} className={`flex-1 rounded-full py-1.5 ${canal === c ? "bg-brand-grad" : "text-muted"}`}>{c === "whatsapp" ? "WhatsApp" : "Email"}</button>)}
+          <span className="flex-1 rounded-full bg-brand-grad py-1.5 text-center">Notificación</span>
+          <span className="flex-1 py-1.5 text-center text-muted" title="Muy pronto">WhatsApp <span className="text-[11px]">· pronto</span></span>
         </div>
-        <input className="input mt-3" value={valor} onChange={(e) => setValor(e.target.value)} placeholder={canal === "whatsapp" ? "+34 600 000 000" : "tu@email.com"} />
-        {estado !== "idle" && <p className={`mt-3 text-sm ${estado === "ok" ? "text-green-400" : "text-red-400"}`}>{msg}</p>}
-        <button onClick={enviar} disabled={!valor} className="btn-brand mt-5 w-full disabled:opacity-50">Activar alerta</button>
+        {estado === "ok" || estado === "error" ? <p className={`mt-3 text-sm ${estado === "ok" ? "text-green-400" : "text-red-400"}`}>{msg}</p> : null}
+        {estado === "ok"
+          ? <button onClick={onClose} className="btn-brand mt-5 w-full">Hecho</button>
+          : <button onClick={enviar} disabled={estado === "cargando"} className="btn-brand mt-5 w-full disabled:opacity-50">{estado === "cargando" ? "Activando…" : "Activar notificaciones"}</button>}
       </div>
     </div>
   );

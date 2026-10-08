@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Bell, ChevronDown, ChevronUp, FolderOpen, Heart, LogOut, Plus, Trash2, X } from "lucide-react";
 import { useLocal } from "./useLocal";
+import { sincronizar } from "@/lib/alertas";
 import { useFavs } from "./useFavs";
 import { getListing } from "@/lib/data";
 import PropertyCard from "./PropertyCard";
@@ -78,7 +79,7 @@ export default function PerfilView() {
       <div className="mt-4 rounded-[22px] border border-white/10 bg-[#1a1a1c] p-5">
         <span className="flex items-center gap-2 text-[20px] font-semibold"><Bell size={20} className="text-[#34d399]" />Alertas</span>
         {alertas.length ? <ul className="mt-3 space-y-2">{alertas.map((a, k) => (
-          <li key={k + a.expira} className="flex items-center justify-between rounded-xl bg-white/[.04] px-4 py-3"><Link href={`/buscar/${a.params}`} className="min-w-0"><span className="block truncate">{a.query}</span><span className="text-xs text-muted">Caduca el {new Date(a.expira).toLocaleDateString("es-ES")}</span></Link><button onClick={() => setAlertas(alertas.filter((_, j) => j !== k))} aria-label="Borrar alerta" className="p-2 text-muted"><X size={16} /></button></li>))}</ul>
+          <li key={k + a.expira} className="flex items-center justify-between rounded-xl bg-white/[.04] px-4 py-3"><Link href={`/buscar/${a.params}`} className="min-w-0"><span className="block truncate">{a.query}</span><span className="text-xs text-muted">Caduca el {new Date(a.expira).toLocaleDateString("es-ES")}</span></Link><button onClick={() => { const resto = alertas.filter((_, j) => j !== k); setAlertas(resto); localStorage.setItem("pisoya:alertas", JSON.stringify(resto)); sincronizar().catch(() => {}); }} aria-label="Borrar alerta" className="p-2 text-muted"><X size={16} /></button></li>))}</ul>
           : <p className="mt-3 text-[15px] text-soft">Desde una búsqueda, toca «Crear alerta» y te avisamos de los pisos nuevos.</p>}
       </div>
 
