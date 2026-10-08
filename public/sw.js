@@ -31,7 +31,7 @@ async function comprobar() {
     const url = n.length === 1 ? new URL("inmueble/" + p.id + "/", base()).href : new URL("buscar/" + a.params, base()).href;
     await self.registration.showNotification(n.length === 1 ? "Piso nuevo para «" + a.query + "»" : n.length + " pisos nuevos para «" + a.query + "»", {
       body: p.titulo + " · " + eur(p.precio) + (p.op === "alquilar" ? "/mes" : "") + (p.barrioNombre ? " · " + p.barrioNombre : ""),
-      icon: new URL("icon-192.png", base()).href, badge: new URL("icon-192.png", base()).href,
+      icon: new URL("icon-192.png", base()).href, badge: new URL("badge-96.png", base()).href,
       tag: "alerta-" + a.id, renotify: true, data: { url },
     });
     a.visto = n[0].pub; avisos++;
