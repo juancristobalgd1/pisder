@@ -3,13 +3,7 @@ export const LOGO_PATH = "M16.81 205.37 C11.64 205.22 9.96 204.72 8.00 202.76 C6
 export default function LogoMark({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={Math.round(size * 212 / 225)} viewBox="0 0 225 212" className={className} aria-hidden>
-      <defs>
-        <linearGradient id="pisder-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6ee7b7" />
-          <stop offset="1" stopColor="#10b981" />
-        </linearGradient>
-      </defs>
-      <path fillRule="evenodd" fill="url(#pisder-g)" d={LOGO_PATH} />
+      <path fillRule="evenodd" fill="#34d399" d={LOGO_PATH} />
     </svg>
   );
 }
