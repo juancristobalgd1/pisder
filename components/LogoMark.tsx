@@ -3,7 +3,7 @@ export const LOGO_PATH = "M58.75 206.48 C54.80 206.44 49.31 206.34 46.56 206.26 
 export default function LogoMark({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={Math.round(size * 212 / 225)} viewBox="0 0 225 212" className={className} aria-hidden>
-      <path fillRule="evenodd" fill="#10b981" d={LOGO_PATH} />
+      <path fillRule="evenodd" fill="#047857" d={LOGO_PATH} />
     </svg>
   );
 }
